@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6F72C8D9-7EEC-44B7-A262-B5C902C258FC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{24525C25-761C-4B63-A50E-330F83C79F64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "shs.Api", "src\shs.Api\shs.Api.csproj", "{12AF20D3-399A-49CA-9B54-BDFF607AD23B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{12AF20D3-399A-49CA-9B54-BDFF607AD23B} = {6F72C8D9-7EEC-44B7-A262-B5C902C258FC}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12AF20D3-399A-49CA-9B54-BDFF607AD23B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12AF20D3-399A-49CA-9B54-BDFF607AD23B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12AF20D3-399A-49CA-9B54-BDFF607AD23B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12AF20D3-399A-49CA-9B54-BDFF607AD23B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
