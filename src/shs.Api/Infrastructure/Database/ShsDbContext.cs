@@ -1,13 +1,18 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using shs.Api.Domain.Entities;
 
 namespace shs.Api.Infrastructure.Database;
 
-public class ShsDbContext (DbContextOptions<ShsDbContext> options) : DbContext(options)
+public class ShsDbContext (DbContextOptions<ShsDbContext> options) : IdentityDbContext<UserEntity>(options)
 {
+    public DbSet<ConsignmentItemEntity> ConsignmentItems { get; set; }
+    public DbSet<ConsignmentSupplierEntity> ConsignmentSuppliers { get; set; }
+    public DbSet<ConsignmentEntity> Consignments { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ShsDbContext).Assembly);
-
+    { 
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ShsDbContext).Assembly);
+        
     }
 }
