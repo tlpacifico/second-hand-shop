@@ -29,6 +29,7 @@ builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
             context.Response.StatusCode = 401;
             return Task.CompletedTask;
         };
+        
     });
 
 builder.Services.AddAuthorization();
