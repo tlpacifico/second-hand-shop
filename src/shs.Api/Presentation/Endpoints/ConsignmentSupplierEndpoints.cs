@@ -8,7 +8,7 @@ public static class ConsignmentSupplierEndpoints
 {
     public static void MapConsignmentsEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/consignments");
+        var group = app.MapGroup("/api/consignments").RequireAuthorization();
 
         group.MapGet("/suppliers", async (ShsDbContext db) =>
             await db.ConsignmentSuppliers.ToListAsync());
