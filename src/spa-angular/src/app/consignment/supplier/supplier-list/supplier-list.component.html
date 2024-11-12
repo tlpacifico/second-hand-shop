@@ -1,0 +1,56 @@
+<div class="grid">
+    <div class="col-12">
+      <div class="card">
+        <p-table [value]="data" [lazy]="true" (onLazyLoad)="loadData($event)" [paginator]="true" [rows]="10"
+          [totalRecords]="totalRecords" responsiveLayout="scroll" [first]="first" stateStorage="local"
+          stateKey="container-search-state-local">
+          <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+              <h5 class="m-0">Clientes de Consignação</h5>
+              <span class="block mt-2 md:mt-0 p-input-icon-left">
+                <button pButton pRipple [label]="'Novo'" icon="pi pi-user-plus" class="p-button" routerLink="create"></button>
+              </span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th>
+                <div class="flex align-items-center"> Nome
+                </div>
+              </th>
+              <th>
+                <div class="flex align-items-center">Email
+                </div>
+              </th>
+              <th>
+                <div class="flex align-items-center">Telefone
+                </div>
+              </th>
+              <th>
+                <div class="flex align-items-center">Enderço
+                </div>
+              </th>
+              <th>Acções</th>
+              <!-- <th></th> -->
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-data>
+            <tr>
+              <td>{{data.name}}</td>
+              <td>{{data.phoneNumber}}</td>
+              <td>{{data.email}}</td>
+              <td>{{data.address}}</td>
+              <td>
+                <div class="flex">
+                  <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="edit(data.id)"></button>
+
+                  <button pButton pRipple pTooltip="Produtos" tooltipPosition="top"
+                   icon="pi pi-book" class="p-button-rounded" [routerLink]="['..',data.id, 'availability']"></button>
+              </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
