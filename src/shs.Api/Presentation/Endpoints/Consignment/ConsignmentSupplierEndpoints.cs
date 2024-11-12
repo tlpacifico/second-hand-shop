@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using shs.Api.Domain.Entities;
 using shs.Api.Infrastructure.Database;
+using shs.Api.Presentation.Endpoints.Consignment;
+using shs.Api.Presentation.Endpoints.Consignment.Models;
 
 namespace shs.Api.Presentation.Endpoints;
 
@@ -11,15 +13,25 @@ public static class ConsignmentSupplierEndpoints
         var group = app.MapGroup("/api/consignments").RequireAuthorization();
 
         group.MapGet("/suppliers", async (ShsDbContext db) =>
-            await db.ConsignmentSuppliers.ToListAsync());
+            await db.ConsignmentSuppliers.Select(p => new ConsignmentSupplierResponse()
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Email = p.Email,
+                PhoneNumber = p.PhoneNumber,
+                Address = p.Address
+            }).ToListAsync());
 
         group.MapGet("/suppliers/{id}", async (ShsDbContext db, long id) =>
             await db.ConsignmentSuppliers.FindAsync(id) is ConsignmentSupplierEntity supplier
                 ? Results.Ok(supplier)
                 : Results.NotFound());
 
-        group.MapPost("/suppliers", async (ShsDbContext db, ConsignmentSupplierEntity supplier) =>
+        group.MapPost("/suppliers", async (ShsDbContext db, CreateConsignmentSupplierRequest request) =>
         {
+            var supplier = request.ToEntity();
+            supplier.CreatedBy = "System";
+            supplier.CreatedOn = DateTime.UtcNow;
             db.ConsignmentSuppliers.Add(supplier);
             await db.SaveChangesAsync();
             return Results.Created($"/consignmentSuppliers/{supplier.Id}", supplier);

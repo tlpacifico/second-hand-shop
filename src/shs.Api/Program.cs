@@ -1,9 +1,4 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using shs.Api;
 using shs.Api.Domain.Entities;
 using shs.Api.Infrastructure.Database;
@@ -78,8 +73,7 @@ await scope.ApplyMigrations();
 app.UseCors("AllowSpecificOrigin");
 app.MapIdentityApi<UserEntity>();
 app.MapScalarUi();
-app.MapGet("/suppliers", async (ShsDbContext db) =>
-    await db.ConsignmentSuppliers.ToListAsync()).RequireAuthorization();
+
 app.MapConsignmentsEndpoints();
 app.MapUserEndpoints();
 // app.UseSpa(spa =>
