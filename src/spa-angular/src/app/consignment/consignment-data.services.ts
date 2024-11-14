@@ -16,14 +16,24 @@ export class ConsignmentService {
         this.uri = `${environment.apiUrl}/api/consignments`;
     }
 
-    public getSuppliers(): Observable<ConsignmentSupplierResponse[]> {
-        return this.httpClient.get<ConsignmentSupplierResponse[]>(`${this.uri}/suppliers`);
+    public getSuppliers(): Observable<ConsignmentSupplierModel[]> {
+        return this.httpClient.get<ConsignmentSupplierModel[]>(`${this.uri}/suppliers`);
+    }
+
+    public createSupplier(supplier: CreateConsignmentSupplierModel): Observable<{}> {
+        return this.httpClient.post(`${this.uri}/suppliers`, supplier);
     }
 
 }
 
-export interface ConsignmentSupplierResponse {
+export interface ConsignmentSupplierModel {
     id: number;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    address?: string;
+}
+export interface CreateConsignmentSupplierModel {
     name: string;
     email: string;
     phoneNumber: string;

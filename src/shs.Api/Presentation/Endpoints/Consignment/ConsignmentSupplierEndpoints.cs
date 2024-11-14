@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using shs.Api.Domain.Entities;
 using shs.Api.Infrastructure.Database;
 using shs.Api.Presentation.Endpoints.Consignment;
@@ -27,10 +28,10 @@ public static class ConsignmentSupplierEndpoints
                 ? Results.Ok(supplier)
                 : Results.NotFound());
 
-        group.MapPost("/suppliers", async (ShsDbContext db, CreateConsignmentSupplierRequest request) =>
+        group.MapPost("/suppliers", async (ShsDbContext db,  ClaimsPrincipal user, CreateConsignmentSupplierRequest request) =>
         {
             var supplier = request.ToEntity();
-            supplier.CreatedBy = "System";
+            supplier.CreatedBy = user.Identity.Name;
             supplier.CreatedOn = DateTime.UtcNow;
             db.ConsignmentSuppliers.Add(supplier);
             await db.SaveChangesAsync();

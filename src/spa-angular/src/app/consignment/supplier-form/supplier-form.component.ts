@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ConsignmentSupplierResponse } from '../consignment-data.services';
+import { ConsignmentService, ConsignmentSupplierModel, CreateConsignmentSupplierModel } from '../consignment-data.services';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -14,12 +14,13 @@ import { ButtonModule } from 'primeng/button';
 })
 export class SupplierFormComponent {
     public vm$: Observable<{
-        supplier: ConsignmentSupplierResponse;
+        supplier: ConsignmentSupplierModel;
     }>;
     public form: FormGroup<SupplierFormControlModel>;
 
     constructor(
-        private formGroup: FormBuilder
+        private formGroup: FormBuilder,
+        private consignmentService: ConsignmentService
     ) {
         this.form =  this.formGroup.group<SupplierFormControlModel>({
             name: new FormControl<string | null>(null, [Validators.required]),
@@ -30,9 +31,16 @@ export class SupplierFormComponent {
     }
 
     public submit(): void {
-        if (this.form.valid) {
+        if (this.form.invalid) {
           return;
         }
+
+        const supplier = this.form.value as CreateConsignmentSupplierModel;
+
+        this.consignmentService.createSupplier(supplier)
+        .subscribe(data => {
+            this.back();
+        });
 
     }
 
