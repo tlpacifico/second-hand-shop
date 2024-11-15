@@ -3,6 +3,7 @@ using shs.Api;
 using shs.Api.Domain.Entities;
 using shs.Api.Infrastructure.Database;
 using shs.Api.Presentation.Endpoints;
+using shs.Api.Presentation.Endpoints.Consignment;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,9 +77,6 @@ app.MapScalarUi();
 
 app.MapConsignmentsEndpoints();
 app.MapUserEndpoints();
-// app.UseSpa(spa =>
-// {
-//     spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
-// });
+
 app.Run();
 

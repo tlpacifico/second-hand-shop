@@ -16,4 +16,20 @@ public static class Mapper
             Address = request.Address
         };
     }
+    
+    public static ConsignmentEntity ToEntity(this CreateConsignmentRequest request)
+    {
+        return new ConsignmentEntity
+        {
+            SupplierId = request.SupplierId,
+            ConsignmentDate = request.ConsignmentDate,
+            PickupDate = request.PickupDate,
+            Items = request.Items.Select(i => new ConsignmentItemEntity
+            {
+                Name = i.Name,
+                Description = i.Description,
+                Price = i.Price
+            }).ToList()
+        };
+    }
 }

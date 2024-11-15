@@ -11,7 +11,7 @@ public class ConsignmentEntity : EntityWithIdAuditable<long>, IHaveSoftDelete
     public string? DeletedBy { get; set; }
     public DateTime? DeletedOn { get; set; }
     
-    public virtual required ConsignmentSupplierEntity Supplier { get; set; }
-    public virtual required ICollection<ConsignmentItemEntity> Items { get; set; }
+    public virtual ConsignmentSupplierEntity? Supplier { get; set; }
+    public virtual ICollection<ConsignmentItemEntity>? Items { get; set; }
     
 }

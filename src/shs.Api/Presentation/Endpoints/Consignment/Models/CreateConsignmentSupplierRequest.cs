@@ -1,8 +1,7 @@
 ﻿namespace shs.Api.Presentation.Endpoints.Consignment.Models;
 
-public record ConsignmentSupplierResponse
+public record CreateConsignmentSupplierRequest
 {
-    public long Id { get; set; }
     public required string Name { get; set; }
     public required string Email { get; set; }
     public required string PhoneNumber { get; set; }

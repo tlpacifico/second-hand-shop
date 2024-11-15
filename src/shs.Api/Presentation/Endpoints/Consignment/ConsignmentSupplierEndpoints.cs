@@ -1,11 +1,9 @@
-﻿using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using shs.Api.Domain.Entities;
 using shs.Api.Infrastructure.Database;
-using shs.Api.Presentation.Endpoints.Consignment;
 using shs.Api.Presentation.Endpoints.Consignment.Models;
 
-namespace shs.Api.Presentation.Endpoints;
+namespace shs.Api.Presentation.Endpoints.Consignment;
 
 public static class ConsignmentSupplierEndpoints
 {
@@ -28,11 +26,9 @@ public static class ConsignmentSupplierEndpoints
                 ? Results.Ok(supplier)
                 : Results.NotFound());
 
-        group.MapPost("/suppliers", async (ShsDbContext db,  ClaimsPrincipal user, CreateConsignmentSupplierRequest request) =>
+        group.MapPost("/suppliers", async (ShsDbContext db, CreateConsignmentSupplierRequest request) =>
         {
             var supplier = request.ToEntity();
-            supplier.CreatedBy = user.Identity.Name;
-            supplier.CreatedOn = DateTime.UtcNow;
             db.ConsignmentSuppliers.Add(supplier);
             await db.SaveChangesAsync();
             return Results.Created($"/consignmentSuppliers/{supplier.Id}", supplier);
@@ -60,6 +56,14 @@ public static class ConsignmentSupplierEndpoints
             db.ConsignmentSuppliers.Remove(supplier);
             await db.SaveChangesAsync();
             return Results.NoContent();
+        });
+        
+        group.MapPost("/", async (ShsDbContext db, CreateConsignmentRequest request) =>
+        {
+            var consignment = request.ToEntity();
+            db.Consignments.Add(consignment);
+            await db.SaveChangesAsync();
+            return Results.Created($"/api/consignments/{consignment.Id}", consignment);
         });
     }
 }
