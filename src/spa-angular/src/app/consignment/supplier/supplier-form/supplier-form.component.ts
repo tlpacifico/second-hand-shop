@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ConsignmentService, ConsignmentSupplierModel, CreateConsignmentSupplierModel } from '../consignment-data.services';
+import { ConsignmentService, ConsignmentSupplierModel, CreateConsignmentSupplierModel } from '../../consignment-data.services';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -8,7 +8,7 @@ import { ButtonModule } from 'primeng/button';
 @Component({
     selector: 'app-supplier-form',
     standalone: true,
-    imports: [CommonModule, ButtonModule, ReactiveFormsModule   ],
+    imports: [CommonModule, ButtonModule, ReactiveFormsModule],
     templateUrl: './supplier-form.component.html',
     styleUrl: './supplier-form.component.scss'
 })

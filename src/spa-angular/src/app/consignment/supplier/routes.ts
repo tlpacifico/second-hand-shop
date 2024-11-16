@@ -1,7 +1,8 @@
 import { Route } from "@angular/router";
 import { SupplierListComponent } from "./supplier-list/supplier-list.component";
 import { ConsignmentService } from "../consignment-data.services";
-import { SupplierFormComponent } from "../supplier-form/supplier-form.component";
+import { SupplierFormComponent } from "./supplier-form/supplier-form.component";
+import { ConsignmnetFormComponent } from "./consignmnet-form/consignmnet-form.component";
 
 export const ROUTES: Route[] = [
     {
@@ -23,6 +24,11 @@ export const ROUTES: Route[] = [
                 path: ':id/update',
                 component: SupplierFormComponent,
                 data: { breadcrumb: 'Update' },
+            },
+            {
+                path: ':id/create-consignment',
+                component: ConsignmnetFormComponent,
+                data: { breadcrumb: 'Criar consiginação' },
             }
         ]
     }

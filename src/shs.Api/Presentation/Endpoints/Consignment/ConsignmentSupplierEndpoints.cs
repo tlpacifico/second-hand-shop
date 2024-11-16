@@ -2,6 +2,7 @@
 using shs.Api.Domain.Entities;
 using shs.Api.Infrastructure.Database;
 using shs.Api.Presentation.Endpoints.Consignment.Models;
+using System.Linq;
 
 namespace shs.Api.Presentation.Endpoints.Consignment;
 
@@ -11,7 +12,7 @@ public static class ConsignmentSupplierEndpoints
     {
         var group = app.MapGroup("/api/consignments").RequireAuthorization();
 
-        group.MapGet("/suppliers", async (ShsDbContext db) =>
+        group.MapGet("/suppliers", async (ShsDbContext db, CancellationToken ct) =>
             await db.ConsignmentSuppliers.Select(p => new ConsignmentSupplierResponse()
             {
                 Id = p.Id,
@@ -19,34 +20,47 @@ public static class ConsignmentSupplierEndpoints
                 Email = p.Email,
                 PhoneNumber = p.PhoneNumber,
                 Address = p.Address
-            }).ToListAsync());
+            }).ToListAsync(ct));
 
-        group.MapGet("/suppliers/{id}", async (ShsDbContext db, long id) =>
-            await db.ConsignmentSuppliers.FindAsync(id) is ConsignmentSupplierEntity supplier
-                ? Results.Ok(supplier)
-                : Results.NotFound());
-
-        group.MapPost("/suppliers", async (ShsDbContext db, CreateConsignmentSupplierRequest request) =>
+        group.MapGet("/suppliers/{id:long}", async (ShsDbContext db, long id, CancellationToken ct) =>
         {
-            var supplier = request.ToEntity();
-            db.ConsignmentSuppliers.Add(supplier);
-            await db.SaveChangesAsync();
-            return Results.Created($"/consignmentSuppliers/{supplier.Id}", supplier);
+            var supplier = await db.ConsignmentSuppliers.FirstOrDefaultAsync(p => p.Id == id, ct);
+
+            return supplier is null
+                ? Results.NotFound()
+                : Results.Ok(new ConsignmentSupplierResponse()
+                {
+                    Id = supplier.Id,
+                    Name = supplier.Name,
+                    Email = supplier.Email,
+                    PhoneNumber = supplier.PhoneNumber,
+                    Address = supplier.Address
+                });
         });
 
-        group.MapPut("/suppliers/{id}", async (ShsDbContext db, long id, ConsignmentSupplierEntity updatedSupplier) =>
-        {
-            var supplier = await db.ConsignmentSuppliers.FindAsync(id);
-            if (supplier is null) return Results.NotFound();
+        group.MapPost("/suppliers",
+            async (ShsDbContext db, CreateConsignmentSupplierRequest request, CancellationToken ct) =>
+            {
+                var supplier = request.ToEntity();
+                await db.ConsignmentSuppliers.AddAsync(supplier, ct);
+                await db.SaveChangesAsync(ct);
+                return Results.Created($"/consignmentSuppliers/{supplier.Id}", supplier);
+            });
 
-            supplier.Name = updatedSupplier.Name;
-            supplier.Email = updatedSupplier.Email;
-            supplier.PhoneNumber = updatedSupplier.PhoneNumber;
-            supplier.Address = updatedSupplier.Address;
+        group.MapPut("/suppliers/{id:long}",
+            async (ShsDbContext db, long id, ConsignmentSupplierEntity updatedSupplier) =>
+            {
+                var supplier = await db.ConsignmentSuppliers.FindAsync(id);
+                if (supplier is null) return Results.NotFound();
 
-            await db.SaveChangesAsync();
-            return Results.NoContent();
-        });
+                supplier.Name = updatedSupplier.Name;
+                supplier.Email = updatedSupplier.Email;
+                supplier.PhoneNumber = updatedSupplier.PhoneNumber;
+                supplier.Address = updatedSupplier.Address;
+
+                await db.SaveChangesAsync();
+                return Results.NoContent();
+            });
 
         group.MapDelete("/suppliers/{id}", async (ShsDbContext db, long id) =>
         {
@@ -57,13 +71,39 @@ public static class ConsignmentSupplierEndpoints
             await db.SaveChangesAsync();
             return Results.NoContent();
         });
-        
-        group.MapPost("/", async (ShsDbContext db, CreateConsignmentRequest request) =>
+
+        group.MapPost("/", async (ShsDbContext db, CreateConsignmentRequest request, CancellationToken ct) =>
         {
             var consignment = request.ToEntity();
-            db.Consignments.Add(consignment);
-            await db.SaveChangesAsync();
-            return Results.Created($"/api/consignments/{consignment.Id}", consignment);
+            await db.Consignments.AddAsync(consignment, ct);
+            await db.SaveChangesAsync(ct);
+            return Results.Created($"/api/consignments/{consignment.Id}", request);
         });
+
+        group.MapGet("/suppliers/{id:long}/packages", async (ShsDbContext db, long id, CancellationToken ct) =>
+            await db.Consignments
+                .Include(p => p.Supplier)
+                .Include(p => p.Items)
+                .Where(p => p.SupplierId == id)
+                .Select(p => new ConsignmentResponse(
+                    p.Id,
+                    new ConsignmentSupplierResponse()
+                    {
+                        Id = p.Supplier.Id,
+                        Name = p.Supplier.Name,
+                        Email = p.Supplier.Email,
+                        PhoneNumber = p.Supplier.PhoneNumber,
+                        Address = p.Supplier.Address
+                    },
+                    p.ConsignmentDate,
+                    p.PickupDate,
+                    p.Items
+                        .Select(i => new ConsignmentItem(
+                            i.Id,
+                            i.Name,
+                            i.Description,
+                            i.Price))
+                        .ToList()
+                )).ToListAsync(ct));
     }
 }

@@ -25,8 +25,15 @@ import { IncludeCredentialsInterceptor } from './infrastructure/interceptors/inc
             provide: HTTP_INTERCEPTORS,
             useClass: IncludeCredentialsInterceptor,
             multi: true
+        },
+        {
+            provide: 'LOCALE_ID',
+            useValue: 'pt-Br'
         }
     ],
-    bootstrap: [AppComponent],
+    schemas: [],
+    exports: [],
+    bootstrap: [AppComponent]
+
 })
 export class AppModule {}
