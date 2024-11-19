@@ -1,16 +1,17 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ConsignmentService } from '../../consignment-data.services';
+import { combineLatest, filter, map, Observable, switchMap } from 'rxjs';
 
 @Component({
-  selector: 'app-supplier-list',
-  standalone: true,
-  imports: [TableModule, RouterModule, ButtonModule, ConfirmDialogModule],
-  templateUrl: './supplier-list.component.html',
-  styleUrl: './supplier-list.component.scss'
+    selector: 'app-supplier-list',
+    standalone: true,
+    imports: [TableModule, RouterModule, ButtonModule, ConfirmDialogModule],
+    templateUrl: './supplier-list.component.html',
+    styleUrl: './supplier-list.component.scss'
 })
 export class SupplierListComponent {
     public data: any[] = [];
@@ -21,7 +22,8 @@ export class SupplierListComponent {
 
     private VehicleFilter: any = {};
 
-    constructor(private consignmentService: ConsignmentService) {
+    constructor(private consignmentService: ConsignmentService
+    ) {
     }
 
 
@@ -29,26 +31,26 @@ export class SupplierListComponent {
         this.VehicleFilter = {};
 
         for (let key in event.filters) {
-          const f = event.filters[key] as {
-            value?: any,
-            matchMode?: string;
-            operator?: string;
-          }[]
-          if (f[0].matchMode === 'contains') {
-            this.VehicleFilter[key as keyof any] = f[0].value;
-            continue;
-          }
+            const f = event.filters[key] as {
+                value?: any,
+                matchMode?: string;
+                operator?: string;
+            }[]
+            if (f[0].matchMode === 'contains') {
+                this.VehicleFilter[key as keyof any] = f[0].value;
+                continue;
+            }
         }
         this.VehicleFilter.skip = event.first ?? 0;
         this.VehicleFilter.take = event.rows ?? 10;
         this.consignmentService.getSuppliers().subscribe(data => {
-          this.totalRecords = data.length;
-          //this.router.navigated = false;
-          this.data = data.map(item => {
-            return {
-              ...item,
-            }
-          });
+            this.totalRecords = data.length;
+            //this.router.navigated = false;
+            this.data = data.map(item => {
+                return {
+                    ...item,
+                }
+            });
         });
-      }
+    }
 }

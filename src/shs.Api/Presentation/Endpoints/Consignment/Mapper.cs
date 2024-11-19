@@ -1,4 +1,5 @@
 ﻿using shs.Api.Domain.Entities;
+using shs.Api.Domain.Enums;
 using shs.Api.Presentation.Endpoints.Consignment.Models;
 
 namespace shs.Api.Presentation.Endpoints.Consignment;
@@ -26,9 +27,13 @@ public static class Mapper
             PickupDate = request.PickupDate,
             Items = request.Items.Select(i => new ConsignmentItemEntity
             {
+                Status = i.Status,
+                Size = i.Size,
+                BrandId = i.BrandId,
                 Name = i.Name,
                 Description = i.Description,
-                Price = i.Price
+                EvaluatedValue = i.Price,
+                Tags = i.TagIds.Select(t => new ConsignmentItemTagEntity { TagId = t }).ToList(),
             }).ToList()
         };
     }

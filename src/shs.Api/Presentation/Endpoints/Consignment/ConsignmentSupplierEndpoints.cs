@@ -80,7 +80,7 @@ public static class ConsignmentSupplierEndpoints
             return Results.Created($"/api/consignments/{consignment.Id}", request);
         });
 
-        group.MapGet("/suppliers/{id:long}/packages", async (ShsDbContext db, long id, CancellationToken ct) =>
+        group.MapGet("/suppliers/{id:long}/consigned", async (ShsDbContext db, long id, CancellationToken ct) =>
             await db.Consignments
                 .Include(p => p.Supplier)
                 .Include(p => p.Items)
@@ -102,7 +102,7 @@ public static class ConsignmentSupplierEndpoints
                             i.Id,
                             i.Name,
                             i.Description,
-                            i.Price))
+                            i.EvaluatedValue))
                         .ToList()
                 )).ToListAsync(ct));
     }

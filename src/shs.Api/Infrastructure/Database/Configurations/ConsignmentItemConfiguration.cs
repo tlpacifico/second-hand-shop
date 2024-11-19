@@ -24,10 +24,13 @@ public class ConsignmentItemConfiguration : IEntityTypeConfiguration<Consignment
             .IsRequired()
             .HasMaxLength(100);
         
+        builder.Property(p => p.BrandId)
+            .IsRequired();
+        
         builder.Property(ci => ci.Description)
             .HasMaxLength(200);
         
-        builder.Property(ci => ci.Price)
+        builder.Property(ci => ci.EvaluatedValue)
             .IsRequired();
         
         builder.Property(ci => ci.IsDeleted)
@@ -35,12 +38,33 @@ public class ConsignmentItemConfiguration : IEntityTypeConfiguration<Consignment
         
         builder.Property(ci => ci.DeletedBy)
             .HasMaxLength(50);
+
+        builder.ComplexProperty(p => p.PaymentMethod, a =>
+        {
+            a.Property(p => p.PaymentAmount)
+                .IsRequired(false);
+            
+            a.Property(p => p.PaymentType)
+                .IsRequired(false);
+            
+            a.Property(p => p.PaymentDate)
+                .IsRequired(false);
+
+            a.Property(p => p.PaymentPercentage)
+                .IsRequired(false);
+        });
+          
         
         builder.Property(ci => ci.DeletedOn);
         
         builder.HasOne(ci => ci.Consignment)
             .WithMany(c => c.Items)
             .HasForeignKey(ci => ci.ConsignmentId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(ci => ci.Brand)
+            .WithMany()
+            .HasForeignKey(p => p.BrandId)
             .OnDelete(DeleteBehavior.NoAction);
     }
 }

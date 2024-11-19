@@ -2,9 +2,16 @@
 
 public enum ConsignmentStatusType
 {
-    New = 1,
-    InValuation = 2,
-    SentValuation = 3,
-    Completed = 4,
-    Cancelled = 5
+    Evaluated = 1,
+    Published = 2,
+    Sold = 3,
+    Returned = 4,
 }
+
+public enum ProductSizeType
+{
+    Small = 1,
+    Medium = 2,
+    Large = 3
+}
+

@@ -1,9 +1,18 @@
-﻿namespace shs.Api.Presentation.Endpoints.Consignment.Models;
+﻿using shs.Api.Domain.Enums;
+
+namespace shs.Api.Presentation.Endpoints.Consignment.Models;
 
 public record CreateConsignmentItem(
     string Name,
     string? Description,
-    decimal Price);
+    decimal Price)
+{
+    public ConsignmentStatusType Status { get; set; }
+    public ProductSizeType Size { get; set; }
+    public long BrandId { get; set; }
+    
+    public IReadOnlyCollection<long> TagIds { get; set; }
+}
 
 public record ConsignmentResponse(
     long Id,

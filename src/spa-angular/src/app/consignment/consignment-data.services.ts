@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 })
 export class ConsignmentService {
 
+
     private consigmentCache: Map<string, any> = new Map();
 
     private uri: string;
@@ -28,8 +29,12 @@ export class ConsignmentService {
         return this.httpClient.post(`${this.uri}/suppliers`, supplier);
     }
 
-    public create(consignment: ConsignmentModel): Observable<{}> {
+    public create(consignment: CreateConsignmentModel): Observable<{}> {
         return this.httpClient.post(`${this.uri}`, consignment);
+    }
+
+    public getSupplierConsigned(supplierId: number) : Observable<ConsignmentModel[]> {
+        return this.httpClient.get<ConsignmentModel[]>(`${this.uri}/suppliers/${supplierId}/consigned`);
     }
 
 }
@@ -48,16 +53,31 @@ export interface CreateConsignmentSupplierModel {
     address?: string;
 }
 
-export interface ConsignmentModel {
-    id: number;
+export interface CreateConsignmentModel {
     supplierId: number;
     consignmentDate: Date;
     pickupDate: Date;
+    items: CreateConsignmentItemModel[];
+}
+
+export interface CreateConsignmentItemModel {
+    name: string;
+    description: string;
+    price: number;
+}
+
+
+export interface ConsignmentModel {
+    id: number;
+    supplier: ConsignmentSupplierModel;
+    consignmentDate: Date;
+    pickupDate?: Date;
     items: ConsignmentItemModel[];
 }
 
 export interface ConsignmentItemModel {
+    id: number;
     name: string;
-    description: string;
+    description?: string;
     price: number;
 }
