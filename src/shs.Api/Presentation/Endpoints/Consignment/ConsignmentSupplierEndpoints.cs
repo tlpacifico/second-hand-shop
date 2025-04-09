@@ -79,6 +79,12 @@ public static class ConsignmentSupplierEndpoints
             await db.SaveChangesAsync(ct);
             return Results.Created($"/api/consignments/{consignment.Id}", request);
         });
+        
+        group.MapPost("/", async (ShsDbContext db, CreateConsignmentRequest request, CancellationToken ct) =>
+        {
+
+            return Results.Ok();
+        });
 
         group.MapGet("/suppliers/{id:long}/consigned", async (ShsDbContext db, long id, CancellationToken ct) =>
             await db.Consignments
