@@ -4,6 +4,7 @@ using shs.Api.Domain.Entities;
 using shs.Api.Infrastructure.Database;
 using shs.Api.Presentation.Endpoints;
 using shs.Api.Presentation.Endpoints.Consignment;
+using shs.Database.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 

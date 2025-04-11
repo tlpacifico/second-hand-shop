@@ -1,7 +1,8 @@
 ﻿using System.Security.Claims;
 using Marlo.Common.EntityFrameworkCore.Interceptors.Models;
+using Microsoft.AspNetCore.Http;
 
-namespace shs.Api.Infrastructure
+namespace shs.Infrastructure
 {
     public class AuditableProvider : IAuditableUserDataProvider
     {

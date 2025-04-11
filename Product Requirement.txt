@@ -1,0 +1,86 @@
+Great! Here’s a **Front-End Project Requirements Document** for your second-hand store application:
+
+---
+
+# 🖥️ Front-End Project Requirements  
+## Project: Second-Hand Store Product Management App
+
+---
+
+## 🎯 **1. Purpose**
+Design and develop a user-friendly front-end application for managing consigned products in a second-hand store. The front end will serve as the main interface for store staff to register, review, price, and track consignment items.
+
+---
+
+## 🧑‍💻 **2. Target Users**
+- Store Owner / Store Staff
+
+---
+
+## 🖼️ **3. Core UI Screens & Functional Requirements**
+
+### 3.1 🔐 **Login Screen** (Optional for local use)
+- [ ] Simple password or PIN authentication
+- [ ] "Remember me" option for ease of use
+
+### 3.2 🏠 **Dashboard**
+- [ ] Quick summary (e.g., number of items in stock, sold, returned)
+- [ ] Access buttons to:
+  - Register new consignment
+  - View all products
+  - Generate reports
+
+### 3.3 📦 **New Consignment Screen**
+- [ ] Form to enter:
+  - Customer name & contact
+  - Date of delivery
+  - Batch ID (auto-generated)
+- [ ] Button to start adding products
+
+### 3.4 📝 **Product Review & Add Screen**
+For each item in the batch:
+- [ ] Photo upload or selection (optional)
+- [ ] Product title / short description
+- [ ] Category selector
+- [ ] Condition dropdown (e.g., New, Good, Used, Damaged)
+- [ ] Accept / Reject toggle
+- [ ] Price input field (only if accepted)
+- [ ] Notes field (optional)
+
+### 3.5 ✅ **Accepted Items List**
+- [ ] List of items accepted in current batch
+- [ ] Option to edit price or details before finalizing
+- [ ] Save & generate customer report
+
+### 3.6 📃 **Customer Report Screen**
+- [ ] Select batch by customer or ID
+- [ ] View printable report with:
+  - Item names and prices
+  - Total estimated value
+  - Rejected items (optional section)
+- [ ] Export to PDF / Print
+
+### 3.7 📂 **Inventory Management Screen**
+- [ ] View all accepted products
+- [ ] Filter/sort by:
+  - Date received
+  - Customer
+  - Category
+  - Status (Available, Sold, Returned)
+- [ ] Edit product info (if needed)
+- [ ] Mark item as sold or returned
+
+---
+
+## 🛠️ **4. Technical Requirements**
+
+- **Framework**: React
+- **Styling**: Tailwind CSS Custom design
+- **State Management**: Redux / Context API / Local state
+- **Responsiveness**: Should be desktop-first, but responsive if needed
+
+---
+
+
+
+Let me know if you want this tailored to a specific front-end framework (like React or Angular), or if you also want a wireframe or UI sketch to go with it!

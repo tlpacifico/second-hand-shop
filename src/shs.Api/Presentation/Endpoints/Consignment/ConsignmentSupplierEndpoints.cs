@@ -3,6 +3,7 @@ using shs.Api.Domain.Entities;
 using shs.Api.Infrastructure.Database;
 using shs.Api.Presentation.Endpoints.Consignment.Models;
 using System.Linq;
+using shs.Database.Database;
 
 namespace shs.Api.Presentation.Endpoints.Consignment;
 

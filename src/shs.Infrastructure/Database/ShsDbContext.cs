@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using shs.Api.Domain.Entities;
 
-namespace shs.Api.Infrastructure.Database;
+namespace shs.Database.Database;
 
 public class ShsDbContext (DbContextOptions<ShsDbContext> options) : IdentityDbContext<UserEntity>(options)
 {

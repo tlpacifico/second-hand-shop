@@ -9,10 +9,17 @@
 
     <ItemGroup>        
         <PackageReference Include="Marlo.Common.EntityFrameworkCore" Version="1.0.0" />    
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />    
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0-rc.2.24474.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        </PackageReference>    
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
+         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0-rc.2" />
+    </ItemGroup>
+
+        <ItemGroup>
+        <ProjectReference Include="..\shs.Domain\shs.Domain.csproj" />
     </ItemGroup>
 
 </Project>

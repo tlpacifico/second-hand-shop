@@ -3,8 +3,11 @@ using Marlo.Common.EntityFrameworkCore.Interceptors.Models;
 using Marlo.Common.EntityFrameworkCore.Repositories;
 using Marlo.Common.EntityFrameworkCore.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using shs.Infrastructure;
 
-namespace shs.Api.Infrastructure.Database;
+namespace shs.Database.Database;
 
 public static class DatabaseInfrastructureExtensions
 {

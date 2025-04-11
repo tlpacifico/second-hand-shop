@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using shs.Api.Infrastructure.Database;
 
-namespace shs.Api.Infrastructure.Database;
+namespace shs.Database.Database;
 
 public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ShsDbContext>
 {

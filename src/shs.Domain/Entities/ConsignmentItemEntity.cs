@@ -17,7 +17,7 @@ public class ConsignmentItemEntity : EntityWithIdAuditable<long>, IHaveSoftDelet
     public string? DeletedBy { get; set; }
     public DateTime? DeletedOn { get; set; }
     
-    public ConsignmentPaymentMethod? PaymentMethod { get; set; }
+    public ConsignmentPaymentMethod PaymentMethod { get; set; }
     public virtual ConsignmentEntity? Consignment { get; set; }
     public virtual BrandEntity? Brand { get; set; }
     public virtual IEnumerable<ConsignmentItemTagEntity>? Tags { get; set; }

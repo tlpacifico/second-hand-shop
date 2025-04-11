@@ -19,8 +19,8 @@ public enum ConsignmentPaymentType
 
 public class ConsignmentPaymentMethod
 {
-    public ConsignmentPaymentType PaymentType { get; set; }
-    public int PaymentPercentage { get; set; }
-    public decimal PaymentAmount { get; set; }
-    public DateTime PaymentDate { get; set; }
+    public ConsignmentPaymentType? PaymentType { get; set; }
+    public int? PaymentPercentage { get; set; }
+    public decimal? PaymentAmount { get; set; }
+    public DateTime? PaymentDate { get; set; }
 }
