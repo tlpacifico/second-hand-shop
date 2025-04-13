@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -10,32 +10,103 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Plus, Trash } from "lucide-react"
+import { consignments, store } from "@/lib/api"
+import { MultiSelect } from "@/components/ui/multi-select"
 
-// Mock data - would come from a database in a real application
-const owners = [
-  { id: 1, name: "Sarah Johnson" },
-  { id: 2, name: "Michael Smith" },
-  { id: 3, name: "David Wilson" },
-  { id: 4, name: "Emily Brown" },
-  { id: 5, name: "Jessica Davis" },
-]
+interface Owner {
+  id: number;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  address?: string;
+}
+
+interface Item {
+  name: string;
+  description: string;
+  condition: string;
+  price: string;
+  color: string;
+  brandId: string;
+  tags: string[];
+  size: string;
+  receiveDate: string;
+}
+interface Brand {
+  id: number;
+  name: string;
+}
+
+interface Tag {
+  id: number;
+  name: string;
+}
 
 export default function NewItemPage() {
   const router = useRouter()
+  const [owners, setOwners] = useState<Owner[]>([])
+  const [tags, setTags] = useState<Tag[]>([])
+  const [brands, setBrands] = useState<Brand[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [ownerId, setOwnerId] = useState("")
-  const [items, setItems] = useState([{ name: "", description: "", condition: "", price: "" }])
+  const [items, setItems] = useState<Item[]>([{
+    name: "",
+    description: "",
+    condition: "",
+    price: "",
+    color: "",
+    brandId: "",
+    tags: [],
+    size: "",
+    receiveDate: new Date().toISOString().split('T')[0]
+  }])
 
-  const handleItemChange = (index, field, value) => {
+  useEffect(() => {
+    const fetchOwners = async () => {
+      try {
+        const response = await consignments.getOwners()
+        setOwners(response.data)
+      } catch (error) {
+        console.error("Error fetching owners:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    const fetchBrands = async () => {
+      try {
+        const response = await store.getBrands()
+        setBrands(response.data)
+      } catch (error) {
+        console.error("Error fetching brands:", error)
+      }
+    }
+    const fetchTags = async () => {
+      try {
+        const response = await store.getTags()
+        setTags(response.data)
+      } catch (error) {
+        console.error("Error fetching tags:", error)
+      }
+    }
+    fetchBrands();
+    fetchTags();
+    fetchOwners()
+  }, [])
+
+  const handleItemChange = (index: number, field: keyof Item, value: string | string[]) => {
     const newItems = [...items]
-    newItems[index][field] = value
+    newItems[index] = {
+      ...newItems[index],
+      [field]: value
+    }
     setItems(newItems)
   }
 
   const addItem = () => {
-    setItems([...items, { name: "", description: "", condition: "", price: "" }])
+    setItems([...items, { name: "", description: "", condition: "", price: "", color: "", brandId: "", tags: [], size: "", receiveDate: new Date().toISOString().split('T')[0] }])
   }
 
-  const removeItem = (index) => {
+  const removeItem = (index: number) => {
     if (items.length > 1) {
       const newItems = [...items]
       newItems.splice(index, 1)
@@ -43,15 +114,29 @@ export default function NewItemPage() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // In a real app, this would save to a database
-    console.log("Submitting items:", { ownerId, items })
-
-    // Simulate successful save and redirect
-    setTimeout(() => {
+    try {
+      await consignments.createConsignment({
+        ownerId: parseInt(ownerId),
+        consignmentDate: new Date().toISOString(),
+        items: items.map(item => ({
+          name: item.name,
+          description: item.description,
+          price: parseFloat(item.price),
+          condition: item.condition,
+          color: item.color,
+          brandId: parseInt(item.brandId),
+          tagIds: item.tags.map(tag => parseInt(tag)),
+          size: parseInt(item.size),
+          receiveDate: item.receiveDate,
+          status: 0 // Assuming 0 is the initial status
+        }))
+      })
       router.push("/items")
-    }, 500)
+    } catch (error) {
+      console.error("Error creating consignment:", error)
+    }
   }
 
   return (
@@ -76,9 +161,9 @@ export default function NewItemPage() {
             <CardContent className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="owner">Select Owner</Label>
-                <Select value={ownerId} onValueChange={setOwnerId} required>
+                <Select value={ownerId} onValueChange={setOwnerId} required disabled={isLoading}>
                   <SelectTrigger id="owner">
-                    <SelectValue placeholder="Select an owner" />
+                    <SelectValue placeholder={isLoading ? "Loading owners..." : "Select an owner"} />
                   </SelectTrigger>
                   <SelectContent>
                     {owners.map((owner) => (
@@ -164,6 +249,82 @@ export default function NewItemPage() {
                             <SelectItem value="poor">Poor</SelectItem>
                           </SelectContent>
                         </Select>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor={`item-color-${index}`}>Color</Label>
+                          <Input
+                            id={`item-color-${index}`}
+                            value={item.color}
+                            onChange={(e) => handleItemChange(index, "color", e.target.value)}
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor={`item-brand-${index}`}>Brand</Label>
+                          <Select
+                            value={item.brandId}
+                            onValueChange={(value) => handleItemChange(index, "brandId", value)}
+                            required
+                          >
+                            <SelectTrigger id={`item-brand-${index}`}>
+                              <SelectValue placeholder="Select brand" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {brands.map((brand) => (
+                                <SelectItem key={brand.id} value={brand.id.toString()}>
+                                  {brand.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor={`item-size-${index}`}>Size</Label>
+                          <Select
+                            value={item.size}
+                            onValueChange={(value) => handleItemChange(index, "size", value)}
+                            required
+                          >
+                            <SelectTrigger id={`item-size-${index}`}>
+                              <SelectValue placeholder="Select size" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="XS">XS</SelectItem>
+                              <SelectItem value="S">S</SelectItem>
+                              <SelectItem value="M">M</SelectItem>
+                              <SelectItem value="L">L</SelectItem>
+                              <SelectItem value="XL">XL</SelectItem>
+                              <SelectItem value="XXL">XXL</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor={`item-receive-date-${index}`}>Receive Date</Label>
+                          <Input
+                            id={`item-receive-date-${index}`}
+                            type="date"
+                            value={item.receiveDate}
+                            onChange={(e) => handleItemChange(index, "receiveDate", e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor={`item-tags-${index}`}>Tags</Label>
+                        <MultiSelect
+                          options={tags.map(tag => ({
+                            value: tag.id.toString(),
+                            label: tag.name
+                          }))}
+                          selected={item.tags}
+                          onChange={(values) => handleItemChange(index, "tags", values)}
+                          placeholder="Select tags"
+                        />
                       </div>
                     </CardContent>
                   </Card>

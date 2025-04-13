@@ -3,9 +3,10 @@
 public enum ConsignmentStatusType
 {
     Evaluated = 1,
-    Published = 2,
-    Sold = 3,
-    Returned = 4,
+    AwaitingAcceptance = 2,
+    ToSell = 3,
+    Sold = 4,
+    Returned = 5
 }
 
 public enum ProductSizeType

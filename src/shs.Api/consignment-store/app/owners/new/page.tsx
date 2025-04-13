@@ -9,31 +9,36 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { consignments } from "@/lib/api"
 
 export default function NewOwnerPage() {
   const router = useRouter()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
-    address: "",
-    notes: "",
+    phoneNumber: "",
+    address: ""
   })
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // In a real app, this would save to a database
-    console.log("Submitting owner data:", formData)
-
-    // Simulate successful save and redirect
-    setTimeout(() => {
+    try {
+      await consignments.createOwner({
+        name: formData.name,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        address: formData.address
+      })
       router.push("/owners")
-    }, 500)
+    } catch (error) {
+      console.error("Error creating owner:", error)
+      // Here you might want to show an error message to the user
+    }
   }
 
   return (
@@ -66,15 +71,15 @@ export default function NewOwnerPage() {
                   <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} required />
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
+                  <Input id="phoneNumber" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">Address</Label>
                 <Textarea id="address" name="address" value={formData.address} onChange={handleChange} rows={3} />
               </div>
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="notes">Notes</Label>
                 <Textarea
                   id="notes"
@@ -84,7 +89,7 @@ export default function NewOwnerPage() {
                   placeholder="Additional information about this owner"
                   rows={3}
                 />
-              </div>
+              </div> */}
             </CardContent>
             <CardFooter className="flex justify-between">
               <Button variant="outline" type="button" asChild>

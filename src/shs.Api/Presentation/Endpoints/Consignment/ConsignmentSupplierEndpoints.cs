@@ -13,7 +13,7 @@ public static class ConsignmentSupplierEndpoints
     {
         var group = app.MapGroup("/api/consignments").RequireAuthorization();
 
-        group.MapGet("/suppliers", async (ShsDbContext db, CancellationToken ct) =>
+        group.MapGet("/owners", async (ShsDbContext db, CancellationToken ct) =>
             await db.ConsignmentSuppliers.Select(p => new ConsignmentSupplierResponse()
             {
                 Id = p.Id,
@@ -23,7 +23,7 @@ public static class ConsignmentSupplierEndpoints
                 Address = p.Address
             }).ToListAsync(ct));
 
-        group.MapGet("/suppliers/{id:long}", async (ShsDbContext db, long id, CancellationToken ct) =>
+        group.MapGet("/owners/{id:long}", async (ShsDbContext db, long id, CancellationToken ct) =>
         {
             var supplier = await db.ConsignmentSuppliers.FirstOrDefaultAsync(p => p.Id == id, ct);
 
@@ -39,7 +39,7 @@ public static class ConsignmentSupplierEndpoints
                 });
         });
 
-        group.MapPost("/suppliers",
+        group.MapPost("/owners",
             async (ShsDbContext db, CreateConsignmentSupplierRequest request, CancellationToken ct) =>
             {
                 var supplier = request.ToEntity();
@@ -48,7 +48,7 @@ public static class ConsignmentSupplierEndpoints
                 return Results.Created($"/consignmentSuppliers/{supplier.Id}", supplier);
             });
 
-        group.MapPut("/suppliers/{id:long}",
+        group.MapPut("/owners/{id:long}",
             async (ShsDbContext db, long id, ConsignmentSupplierEntity updatedSupplier) =>
             {
                 var supplier = await db.ConsignmentSuppliers.FindAsync(id);
@@ -63,7 +63,7 @@ public static class ConsignmentSupplierEndpoints
                 return Results.NoContent();
             });
 
-        group.MapDelete("/suppliers/{id}", async (ShsDbContext db, long id) =>
+        group.MapDelete("/owners/{id}", async (ShsDbContext db, long id) =>
         {
             var supplier = await db.ConsignmentSuppliers.FindAsync(id);
             if (supplier is null) return Results.NotFound();
@@ -87,7 +87,7 @@ public static class ConsignmentSupplierEndpoints
             return Results.Ok();
         });
 
-        group.MapGet("/suppliers/{id:long}/consigned", async (ShsDbContext db, long id, CancellationToken ct) =>
+        group.MapGet("/owners/{id:long}/consigned", async (ShsDbContext db, long id, CancellationToken ct) =>
             await db.Consignments
                 .Include(p => p.Supplier)
                 .Include(p => p.Items)

@@ -30,6 +30,9 @@ public class ConsignmentItemConfiguration : IEntityTypeConfiguration<Consignment
         builder.Property(ci => ci.Description)
             .HasMaxLength(200);
         
+        builder.Property(ci => ci.Color)
+            .HasMaxLength(50);
+        
         builder.Property(ci => ci.EvaluatedValue)
             .IsRequired();
         

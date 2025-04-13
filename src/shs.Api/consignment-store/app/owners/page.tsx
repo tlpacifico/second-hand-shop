@@ -1,20 +1,60 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Search } from "lucide-react"
+import { consignments } from "@/lib/api"
+import { useEffect, useState } from "react"
 
-// Mock data - would come from a database in a real application
-const owners = [
-  { id: 1, name: "Sarah Johnson", email: "sarah@example.com", phone: "(555) 123-4567", itemCount: 12 },
-  { id: 2, name: "Michael Smith", email: "michael@example.com", phone: "(555) 234-5678", itemCount: 8 },
-  { id: 3, name: "David Wilson", email: "david@example.com", phone: "(555) 345-6789", itemCount: 15 },
-  { id: 4, name: "Emily Brown", email: "emily@example.com", phone: "(555) 456-7890", itemCount: 5 },
-  { id: 5, name: "Jessica Davis", email: "jessica@example.com", phone: "(555) 567-8901", itemCount: 10 },
-]
+interface Owner {
+  id: number
+  name: string
+  email: string
+  phoneNumber: string
+  itemCount: number
+}
 
 export default function OwnersPage() {
+  const [owners, setOwners] = useState<Owner[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchOwners = async () => {
+      try {
+        const response = await consignments.getOwners()
+        setOwners(response.data)
+        setError(null)
+      } catch (err) {
+        setError("Failed to load owners")
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchOwners()
+  }, [])
+
+  if (loading) {
+    return (
+      <main className="container mx-auto p-4 md:p-6">
+        <div>Loading owners...</div>
+      </main>
+    )
+  }
+
+  if (error) {
+    return (
+      <main className="container mx-auto p-4 md:p-6">
+        <div className="text-red-500">{error}</div>
+      </main>
+    )
+  }
+
   return (
     <main className="container mx-auto p-4 md:p-6">
       <div className="flex flex-col gap-6">
@@ -56,7 +96,7 @@ export default function OwnersPage() {
                   <TableRow key={owner.id}>
                     <TableCell className="font-medium">{owner.name}</TableCell>
                     <TableCell>{owner.email}</TableCell>
-                    <TableCell>{owner.phone}</TableCell>
+                    <TableCell>{owner.phoneNumber}</TableCell>
                     <TableCell>{owner.itemCount}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="sm" asChild>

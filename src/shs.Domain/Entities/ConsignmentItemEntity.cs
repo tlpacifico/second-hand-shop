@@ -7,11 +7,11 @@ public class ConsignmentItemEntity : EntityWithIdAuditable<long>, IHaveSoftDelet
 {
     public long ConsignmentId { get; set; }
     public ConsignmentStatusType Status { get; set; }
-    
     public required ProductSizeType Size { get; set; }
     public long BrandId { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }
+    public string? Color { get; set; }
     public required decimal EvaluatedValue { get; set; }
     public bool IsDeleted { get; set; }
     public string? DeletedBy { get; set; }

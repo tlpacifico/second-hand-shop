@@ -4,6 +4,7 @@ using shs.Api.Domain.Entities;
 using shs.Api.Infrastructure.Database;
 using shs.Api.Presentation.Endpoints;
 using shs.Api.Presentation.Endpoints.Consignment;
+using shs.Api.Presentation.Endpoints.Store;
 using shs.Database.Database;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -78,6 +79,7 @@ app.MapScalarUi();
 
 app.MapConsignmentsEndpoints();
 app.MapUserEndpoints();
+app.MapStoreEndpoints();
 
 app.Run();
 

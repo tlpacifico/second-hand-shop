@@ -9,6 +9,9 @@ public class ShsDbContext (DbContextOptions<ShsDbContext> options) : IdentityDbC
     public DbSet<ConsignmentItemEntity> ConsignmentItems { get; set; }
     public DbSet<ConsignmentSupplierEntity> ConsignmentSuppliers { get; set; }
     public DbSet<ConsignmentEntity> Consignments { get; set; }
+    public DbSet<BrandEntity> Brands { get; set; }
+    public DbSet<ConsignmentItemTagEntity> ConsignmentItemTags { get; set; }
+    public DbSet<TagEntity> Tags { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     { 
         base.OnModelCreating(modelBuilder);
