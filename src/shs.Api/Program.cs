@@ -5,6 +5,7 @@ using shs.Api.Infrastructure.Database;
 using shs.Api.Presentation.Endpoints;
 using shs.Api.Presentation.Endpoints.Consignment;
 using shs.Api.Presentation.Endpoints.Store;
+using shs.Application;
 using shs.Database;
 using shs.Database.Database;
 using shs.Infrastructure;
@@ -15,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi("v1");
 builder.Services.AddDatabaseInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
 builder.Services.AddHttpContextAccessor();
 
 
