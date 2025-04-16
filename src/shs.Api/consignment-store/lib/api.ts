@@ -1,5 +1,61 @@
 import axios from 'axios';
 
+// Response Types
+interface AccessTokenResponse {
+  tokenType?: string;
+  accessToken: string;
+  expiresIn: number;
+  refreshToken: string;
+}
+
+interface BrandResponse {
+  id: number;
+  name: string;
+}
+
+interface TagResponse {
+  id: number;
+  name: string;
+}
+
+interface InfoResponse {
+  email: string;
+  isEmailConfirmed: boolean;
+}
+
+interface TwoFactorResponse {
+  sharedKey: string;
+  recoveryCodesLeft: number;
+  recoveryCodes?: string[];
+  isTwoFactorEnabled: boolean;
+  isMachineRemembered: boolean;
+}
+
+export interface PagedModel<T> {
+  items: T[];
+  total: number;
+  skip: number;
+  take: number;
+}
+
+export interface ConsignmentSupplierEntity {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  initial: string;
+  commissionPercentageInCash?: number;
+  commissionPercentageInProducts?: number;
+  address?: string;
+  isDeleted: boolean;
+  deletedBy?: string;
+  deletedOn?: string;
+  id: number;
+  createdBy: string;
+  createdOn: string;
+  updatedOn?: string;
+  updatedBy?: string;
+}
+
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true, // This is important for cookie handling
@@ -21,11 +77,12 @@ api.interceptors.request.use(
 
 // Auth endpoints
 export const auth = {
-  login: async (data: { email: string; password: string; twoFactorCode?: string; twoFactorRecoveryCode?: string }) => {
-    return api.post('/login', data, { params: { useCookies: true } });
+  login: async (data: { email: string; password: string; twoFactorCode?: string; twoFactorRecoveryCode?: string }): Promise<AccessTokenResponse> => {
+    const response = await api.post('/login', data, { params: { useCookies: true } });
+    return response.data;
   },
-  register: async (data: { email: string; password: string }) => {
-    return api.post('/register', data);
+  register: async (data: { email: string; password: string }): Promise<void> => {
+    await api.post('/register', data);
   },
   logout: async () => {
     // You might want to handle logout locally by clearing cookies/storage
@@ -34,36 +91,36 @@ export const auth = {
 
 // Consignment endpoints
 export const consignments = {
-  getOwners: async () => {
-    return api.get('/api/consignments/owners');
+  getOwners: async (skip = 0, take = 10): Promise<PagedModel<ConsignmentSupplierEntity>> => {
+    const response = await api.get(`/api/consignments/owners?skip=${skip}&take=${take}`);
+    return response.data;
   },
-  getOwner: async (id: number) => {
-    return api.get(`/api/consignments/owners/${id}`);
+  getOwner: async (id: number): Promise<ConsignmentSupplierEntity> => {
+    const response = await api.get(`/api/consignments/owners/${id}`);
+    return response.data;
   },
   createOwner: async (data: {
     name: string;
     email: string;
     phoneNumber: string;
+    initial: string;
     address?: string;
-  }) => {
-    return api.post('/api/consignments/owners', data);
+    commissionPercentageInCash?: number;
+    commissionPercentageInProducts?: number;
+  }): Promise<void> => {
+    await api.post('/api/consignments/owners', data);
   },
-  updateOwner: async (id: number, data: {
-    name: string;
-    email: string;
-    phoneNumber: string;
-    address?: string;
-  }) => {
-    return api.put(`/api/consignments/owners/${id}`, data);
+  updateOwner: async (id: number, data: ConsignmentSupplierEntity): Promise<void> => {
+    await api.put(`/api/consignments/owners/${id}`, data);
   },
-  deleteOwner: async (id: number) => {
-    return api.delete(`/api/consignments/owners/${id}`);
+  deleteOwner: async (id: number): Promise<void> => {
+    await api.delete(`/api/consignments/owners/${id}`);
   },
   getConsignments: async (ownerId: number) => {
     return api.get(`/api/consignments/owners/${ownerId}/consigned`);
   },
   createConsignment: async (data: {
-    ownerId: number;
+    supplierId: number;
     consignmentDate: string;
     pickupDate?: string;
     items: Array<{
@@ -75,28 +132,31 @@ export const consignments = {
       brandId?: number;
       tagIds?: number[];
     }>;
-  }) => {
-    return api.post('/api/consignments', data);
+  }): Promise<void> => {
+    await api.post('/api/consignments', data);
   },
 };
 
 export const store = { 
-  getBrands: async () => {
-    return api.get('/api/store/brands');
+  getBrands: async (): Promise<BrandResponse[]> => {
+    const response = await api.get('/api/store/brands');
+    return response.data;
   },
-  getTags: async () => {
-    return api.get('/api/store/tags');
+  getTags: async (): Promise<TagResponse[]> => {
+    const response = await api.get('/api/store/tags');
+    return response.data;
   },
- 
 }
 
 // User management endpoints
 export const user = {
-  getInfo: async () => {
-    return api.get('/manage/info');
+  getInfo: async (): Promise<InfoResponse> => {
+    const response = await api.get('/manage/info');
+    return response.data;
   },
-  updateInfo: async (data: { newEmail?: string; newPassword?: string; oldPassword?: string }) => {
-    return api.post('/manage/info', data);
+  updateInfo: async (data: { newEmail?: string; newPassword?: string; oldPassword?: string }): Promise<InfoResponse> => {
+    const response = await api.post('/manage/info', data);
+    return response.data;
   },
   manage2FA: async (data: {
     enable?: boolean;
@@ -104,8 +164,9 @@ export const user = {
     resetSharedKey?: boolean;
     resetRecoveryCodes?: boolean;
     forgetMachine?: boolean;
-  }) => {
-    return api.post('/manage/2fa', data);
+  }): Promise<TwoFactorResponse> => {
+    const response = await api.post('/manage/2fa', data);
+    return response.data;
   },
 };
 

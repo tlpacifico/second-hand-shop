@@ -354,24 +354,54 @@
         }
       }
     },
-    "/api/consignments/suppliers": {
+    "/api/consignments/owners": {
       "get": {
         "tags": [
           "shs.Api"
         ],
+        "parameters": [
+          {
+            "name": "Skip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Take",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ConsignmentSupplierResponse"
-                  }
-                }
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "shs.Api"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateConsignmentSupplierRequest"
               }
             }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -451,28 +481,6 @@
         }
       }
     },
-    "/api/consignments/owners": {
-      "post": {
-        "tags": [
-          "shs.Api"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateConsignmentSupplierRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/consignments": {
       "post": {
         "tags": [
@@ -495,21 +503,22 @@
         }
       }
     },
-    "/api/consignments/owners/{id}/consigned": {
+    "/api/user/me": {
       "get": {
         "tags": [
           "shs.Api"
         ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
+        "responses": {
+          "200": {
+            "description": "OK"
           }
+        }
+      }
+    },
+    "/api/store/brands": {
+      "get": {
+        "tags": [
+          "shs.Api"
         ],
         "responses": {
           "200": {
@@ -519,7 +528,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ConsignmentResponse"
+                    "$ref": "#/components/schemas/BrandResponse"
                   }
                 }
               }
@@ -528,14 +537,24 @@
         }
       }
     },
-    "/api/user/me": {
+    "/api/store/tags": {
       "get": {
         "tags": [
           "shs.Api"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TagResponse"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -567,12 +586,10 @@
           }
         }
       },
-      "ConsignmentItem": {
+      "BrandResponse": {
         "required": [
           "id",
-          "name",
-          "description",
-          "price"
+          "name"
         ],
         "type": "object",
         "properties": {
@@ -582,48 +599,6 @@
           },
           "name": {
             "type": "string"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "price": {
-            "type": "number",
-            "format": "double"
-          }
-        }
-      },
-      "ConsignmentResponse": {
-        "required": [
-          "id",
-          "supplier",
-          "consignmentDate",
-          "pickupDate",
-          "items"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "supplier": {
-            "$ref": "#/components/schemas/ConsignmentSupplierResponse"
-          },
-          "consignmentDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "pickupDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ConsignmentItem"
-            }
           }
         }
       },
@@ -634,7 +609,8 @@
         "required": [
           "name",
           "email",
-          "phoneNumber"
+          "phoneNumber",
+          "initial"
         ],
         "type": "object",
         "properties": {
@@ -646,6 +622,17 @@
           },
           "phoneNumber": {
             "type": "string"
+          },
+          "initial": {
+            "type": "string"
+          },
+          "commissionPercentageInCash": {
+            "type": "number",
+            "format": "double"
+          },
+          "commissionPercentageInProducts": {
+            "type": "number",
+            "format": "double"
           },
           "address": {
             "type": "string",
@@ -680,33 +667,6 @@
             "nullable": true
           },
           "updatedBy": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ConsignmentSupplierResponse": {
-        "required": [
-          "name",
-          "email",
-          "phoneNumber"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "address": {
             "type": "string",
             "nullable": true
           }
@@ -784,6 +744,7 @@
         "required": [
           "name",
           "email",
+          "initial",
           "phoneNumber"
         ],
         "type": "object",
@@ -794,12 +755,23 @@
           "email": {
             "type": "string"
           },
+          "initial": {
+            "type": "string"
+          },
           "phoneNumber": {
             "type": "string"
           },
           "address": {
             "type": "string",
             "nullable": true
+          },
+          "commissionPercentageInCash": {
+            "type": "number",
+            "format": "double"
+          },
+          "commissionPercentageInProducts": {
+            "type": "number",
+            "format": "double"
           }
         }
       },
@@ -959,6 +931,22 @@
             "type": "string"
           },
           "newPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "TagResponse": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
             "type": "string"
           }
         }

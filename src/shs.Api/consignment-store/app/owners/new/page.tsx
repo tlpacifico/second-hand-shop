@@ -17,7 +17,10 @@ export default function NewOwnerPage() {
     name: "",
     email: "",
     phoneNumber: "",
-    address: ""
+    address: "",
+    initial: "",
+    commissionPercentageInCash: "",
+    commissionPercentageInProducts: ""
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -32,7 +35,10 @@ export default function NewOwnerPage() {
         name: formData.name,
         email: formData.email,
         phoneNumber: formData.phoneNumber,
-        address: formData.address
+        initial: formData.initial,
+        address: formData.address || undefined,
+        commissionPercentageInCash: formData.commissionPercentageInCash ? parseFloat(formData.commissionPercentageInCash) : undefined,
+        commissionPercentageInProducts: formData.commissionPercentageInProducts ? parseFloat(formData.commissionPercentageInProducts) : undefined
       })
       router.push("/owners")
     } catch (error) {
@@ -73,6 +79,48 @@ export default function NewOwnerPage() {
                 <div className="space-y-2">
                   <Label htmlFor="phoneNumber">Phone Number</Label>
                   <Input id="phoneNumber" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="initial">Initial</Label>
+                  <Input 
+                    id="initial" 
+                    name="initial" 
+                    value={formData.initial} 
+                    onChange={handleChange} 
+                    required 
+                    maxLength={3}
+                    placeholder="ABC"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="commissionPercentageInCash">Cash Commission %</Label>
+                  <Input 
+                    id="commissionPercentageInCash" 
+                    name="commissionPercentageInCash" 
+                    type="number" 
+                    value={formData.commissionPercentageInCash} 
+                    onChange={handleChange}
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="commissionPercentageInProducts">Product Commission %</Label>
+                  <Input 
+                    id="commissionPercentageInProducts" 
+                    name="commissionPercentageInProducts" 
+                    type="number" 
+                    value={formData.commissionPercentageInProducts} 
+                    onChange={handleChange}
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    placeholder="0.00"
+                  />
                 </div>
               </div>
               <div className="space-y-2">

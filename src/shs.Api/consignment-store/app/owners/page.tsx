@@ -8,25 +8,32 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Search } from "lucide-react"
 import { consignments } from "@/lib/api"
 import { useEffect, useState } from "react"
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
+import { PagedModel, ConsignmentSupplierEntity } from '../../lib/api'
 
-interface Owner {
-  id: number
-  name: string
-  email: string
-  phoneNumber: string
-  itemCount: number
-}
 
 export default function OwnersPage() {
-  const [owners, setOwners] = useState<Owner[]>([])
+  const [owners, setOwners] = useState<PagedModel<ConsignmentSupplierEntity>>({
+    items: [],
+    total: 0,
+    skip: 0,
+    take: 10
+  } as PagedModel<ConsignmentSupplierEntity>)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+
 
   useEffect(() => {
     const fetchOwners = async () => {
-      try {
-        const response = await consignments.getOwners()
-        setOwners(response.data)
+      try {       
+        const response = await consignments.getOwners(owners.skip, owners.take)
+        setOwners({
+          items: response.items,
+          total: response.total,
+          skip: response.skip + owners.take,
+          take: response.take
+        })
         setError(null)
       } catch (err) {
         setError("Failed to load owners")
@@ -37,7 +44,12 @@ export default function OwnersPage() {
     }
 
     fetchOwners()
-  }, [])
+  }, [currentPage])
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    setLoading(true)
+  }
 
   if (loading) {
     return (
@@ -81,35 +93,78 @@ export default function OwnersPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Items</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {owners.map((owner) => (
-                  <TableRow key={owner.id}>
-                    <TableCell className="font-medium">{owner.name}</TableCell>
-                    <TableCell>{owner.email}</TableCell>
-                    <TableCell>{owner.phoneNumber}</TableCell>
-                    <TableCell>{owner.itemCount}</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/owners/${owner.id}`}>View</Link>
-                      </Button>
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/owners/${owner.id}/edit`}>Edit</Link>
-                      </Button>
-                    </TableCell>
+            <div className="space-y-4">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Items</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {owners.items.map((owner) => (
+                    <TableRow key={owner.id}>
+                      <TableCell className="font-medium">{owner.name}</TableCell>
+                      <TableCell>{owner.email}</TableCell>
+                      <TableCell>{owner.phoneNumber}</TableCell>
+                      <TableCell>{owner.initial}</TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link href={`/owners/${owner.id}`}>View</Link>
+                        </Button>
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link href={`/owners/${owner.id}/edit`}>Edit</Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              
+              <Pagination className="justify-center">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        if (currentPage > 1) handlePageChange(currentPage - 1)
+                      }}
+                      className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                  
+                  {[...Array(owners.total)].map((_, i) => (
+                    <PaginationItem key={i + 1}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          handlePageChange(i + 1)
+                        }}
+                        isActive={currentPage === i + 1}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        if (owners.skip + owners.take < owners.total) handlePageChange(currentPage + 1)
+                      }}
+                      className={currentPage >= owners.total / owners.take ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
           </CardContent>
         </Card>
       </div>

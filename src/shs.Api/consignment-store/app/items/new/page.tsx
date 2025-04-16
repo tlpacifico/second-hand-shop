@@ -44,7 +44,7 @@ interface Tag {
 
 export default function NewItemPage() {
   const router = useRouter()
-  const [owners, setOwners] = useState<Owner[]>([])
+  const [owners, setOwners] = useState<any>({})
   const [tags, setTags] = useState<Tag[]>([])
   const [brands, setBrands] = useState<Brand[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -65,7 +65,7 @@ export default function NewItemPage() {
     const fetchOwners = async () => {
       try {
         const response = await consignments.getOwners()
-        setOwners(response.data)
+        setOwners(response)
       } catch (error) {
         console.error("Error fetching owners:", error)
       } finally {
@@ -75,7 +75,7 @@ export default function NewItemPage() {
     const fetchBrands = async () => {
       try {
         const response = await store.getBrands()
-        setBrands(response.data)
+        setBrands(response)
       } catch (error) {
         console.error("Error fetching brands:", error)
       }
@@ -83,7 +83,7 @@ export default function NewItemPage() {
     const fetchTags = async () => {
       try {
         const response = await store.getTags()
-        setTags(response.data)
+        setTags(response)
       } catch (error) {
         console.error("Error fetching tags:", error)
       }
@@ -118,7 +118,7 @@ export default function NewItemPage() {
     e.preventDefault()
     try {
       await consignments.createConsignment({
-        ownerId: parseInt(ownerId),
+        supplierId: parseInt(ownerId),
         consignmentDate: new Date().toISOString(),
         items: items.map(item => ({
           name: item.name,
@@ -166,7 +166,7 @@ export default function NewItemPage() {
                     <SelectValue placeholder={isLoading ? "Loading owners..." : "Select an owner"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {owners.map((owner) => (
+                    {owners.items.map((owner : any) => (
                       <SelectItem key={owner.id} value={owner.id.toString()}>
                         {owner.name}
                       </SelectItem>
