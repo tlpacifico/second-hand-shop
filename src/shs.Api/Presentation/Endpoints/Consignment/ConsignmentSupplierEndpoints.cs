@@ -4,6 +4,8 @@ using shs.Api.Infrastructure.Database;
 using shs.Api.Presentation.Endpoints.Consignment.Models;
 using System.Linq;
 using shs.Database.Database;
+using shs.Domain.Application;
+using shs.Domain.Presentation.Models;
 
 namespace shs.Api.Presentation.Endpoints.Consignment;
 
@@ -13,19 +15,30 @@ public static class ConsignmentSupplierEndpoints
     {
         var group = app.MapGroup("/api/consignments").RequireAuthorization();
 
-        group.MapGet("/owners", async (ShsDbContext db, CancellationToken ct) =>
-            await db.ConsignmentSuppliers.Select(p => new ConsignmentSupplierResponse()
+        group.MapGet("/owners",
+            async ([AsParameters] GetPage page, IConsignmentService service, CancellationToken ct) =>
             {
-                Id = p.Id,
-                Name = p.Name,
-                Email = p.Email,
-                PhoneNumber = p.PhoneNumber,
-                Address = p.Address
-            }).ToListAsync(ct));
+                var result = await service.SearchSupplierAsync(page.Skip, page.Take, ct);
+                return Results.Ok(new PageWithTotal<ConsignmentSupplierResponse>(
+                    page.Skip,
+                    page.Take,
+                    result.Items.Select(p => new ConsignmentSupplierResponse()
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Email = p.Email,
+                        PhoneNumber = p.PhoneNumber,
+                        Address = p.Address,
+                        Initials = p.Initial,
+                        CommissionPercentageInCash = p.CommissionPercentageInCash,
+                        CommissionPercentageInProducts = p.CommissionPercentageInProducts
+                    }).ToList(),
+                    result.Total));
+            });
 
-        group.MapGet("/owners/{id:long}", async (ShsDbContext db, long id, CancellationToken ct) =>
+        group.MapGet("/owners/{id:long}", async (IConsignmentService service, long id, CancellationToken ct) =>
         {
-            var supplier = await db.ConsignmentSuppliers.FirstOrDefaultAsync(p => p.Id == id, ct);
+            var supplier = await service.GetSupplierByIdAsync(id, ct);
 
             return supplier is null
                 ? Results.NotFound()
@@ -35,7 +48,10 @@ public static class ConsignmentSupplierEndpoints
                     Name = supplier.Name,
                     Email = supplier.Email,
                     PhoneNumber = supplier.PhoneNumber,
-                    Address = supplier.Address
+                    Address = supplier.Address,
+                    Initials = supplier.Initial,
+                    CommissionPercentageInCash = supplier.CommissionPercentageInCash,
+                    CommissionPercentageInProducts = supplier.CommissionPercentageInProducts
                 });
         });
 
@@ -80,37 +96,32 @@ public static class ConsignmentSupplierEndpoints
             await db.SaveChangesAsync(ct);
             return Results.Created($"/api/consignments/{consignment.Id}", request);
         });
-        
-        group.MapPost("/", async (ShsDbContext db, CreateConsignmentRequest request, CancellationToken ct) =>
-        {
 
-            return Results.Ok();
-        });
-
-        group.MapGet("/owners/{id:long}/consigned", async (ShsDbContext db, long id, CancellationToken ct) =>
-            await db.Consignments
-                .Include(p => p.Supplier)
-                .Include(p => p.Items)
-                .Where(p => p.SupplierId == id)
-                .Select(p => new ConsignmentResponse(
-                    p.Id,
-                    new ConsignmentSupplierResponse()
-                    {
-                        Id = p.Supplier.Id,
-                        Name = p.Supplier.Name,
-                        Email = p.Supplier.Email,
-                        PhoneNumber = p.Supplier.PhoneNumber,
-                        Address = p.Supplier.Address
-                    },
-                    p.ConsignmentDate,
-                    p.PickupDate,
-                    p.Items
-                        .Select(i => new ConsignmentItem(
-                            i.Id,
-                            i.Name,
-                            i.Description,
-                            i.EvaluatedValue))
-                        .ToList()
-                )).ToListAsync(ct));
+        //     group.MapGet("/owners/{id:long}/consigned", async (ShsDbContext db, long id, CancellationToken ct) =>
+        //         await db.Consignments
+        //             .Include(p => p.Supplier)
+        //             .Include(p => p.Items)
+        //             .Where(p => p.SupplierId == id)
+        //             .Select(p => new ConsignmentResponse(
+        //                 p.Id,
+        //                 new ConsignmentSupplierResponse()
+        //                 {
+        //                     Id = p.Supplier.Id,
+        //                     Name = p.Supplier.Name,
+        //                     Email = p.Supplier.Email,
+        //                     PhoneNumber = p.Supplier.PhoneNumber,
+        //                     Address = p.Supplier.Address
+        //                 },
+        //                 p.ConsignmentDate,
+        //                 p.PickupDate,
+        //                 p.Items
+        //                     .Select(i => new ConsignmentItem(
+        //                         i.Id,
+        //                         i.Name,
+        //                         i.Description,
+        //                         i.EvaluatedValue))
+        //                     .ToList()
+        //             )).ToListAsync(ct));
+        // }
     }
 }

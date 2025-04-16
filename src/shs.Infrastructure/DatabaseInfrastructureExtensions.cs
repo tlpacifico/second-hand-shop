@@ -5,9 +5,11 @@ using Marlo.Common.EntityFrameworkCore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using shs.Infrastructure;
+using shs.Database.Database;
+using shs.Database.Repository;
+using shs.Domain.Infrastructure;
 
-namespace shs.Database.Database;
+namespace shs.Infrastructure;
 
 public static class DatabaseInfrastructureExtensions
 {
@@ -28,6 +30,7 @@ public static class DatabaseInfrastructureExtensions
         services.AddScoped<UpdateExternalIdInterceptor<Guid>>();
         services.AddScoped<UpdateCreatedUpdatedPropertiesInterceptor>();
         services.AddScoped<SoftDeleteInterceptor>();
+        services.AddScoped<IConsignmentRepository, ConsignmentRepository>();
         return services;
     }
 

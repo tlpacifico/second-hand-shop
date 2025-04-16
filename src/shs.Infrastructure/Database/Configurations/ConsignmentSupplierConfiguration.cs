@@ -26,6 +26,18 @@ public class ConsignmentSupplierConfiguration : IEntityTypeConfiguration<Consign
             .IsRequired()
             .HasMaxLength(15);
         
+        builder.Property(cs => cs.Initial)
+            .IsRequired()
+            .HasMaxLength(3);
+        
+        builder.Property(cs => cs.CommissionPercentageInCash)
+            .IsRequired()
+            .HasPrecision(4, 2);
+        
+        builder.Property(cs => cs.Initial)
+            .IsRequired()
+            .HasPrecision(4, 2);
+        
         builder.Property(cs => cs.Address)
             .HasMaxLength(200);
         

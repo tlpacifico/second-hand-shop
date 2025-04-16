@@ -8,7 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>        
-        <PackageReference Include="Marlo.Common.EntityFrameworkCore" Version="1.0.0" />    
+        <PackageReference Include="Marlo.Common.EntityFrameworkCore" Version="1.0.0" />        
+        <PackageReference Include="Marlo.Common.Exceptions" Version="1.1.0" />    
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />    
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0-rc.2.24474.1">
             <PrivateAssets>all</PrivateAssets>

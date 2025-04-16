@@ -14,7 +14,10 @@ public static class Mapper
             Name = request.Name,
             Email = request.Email,
             PhoneNumber = request.PhoneNumber,
-            Address = request.Address
+            Address = request.Address,
+            Initial = request.Initial,
+            CommissionPercentageInCash = request.CommissionPercentageInCash,
+            CommissionPercentageInProducts = request.CommissionPercentageInProducts,
         };
     }
     

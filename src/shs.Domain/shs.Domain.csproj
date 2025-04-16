@@ -11,4 +11,8 @@
            <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0-rc.2.24474.3" />
     </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Presentation\" />
+  </ItemGroup>
+
 </Project>
