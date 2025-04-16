@@ -1,0 +1,7 @@
+app.secondhandstore.local {
+    reverse_proxy localhost:3000
+}
+
+api.secondhandstore.local {
+    reverse_proxy localhost:5026
+}
