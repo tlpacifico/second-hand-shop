@@ -1,6 +1,8 @@
 ﻿using shs.Api.Domain.Entities;
 using shs.Api.Domain.Enums;
 using shs.Api.Presentation.Endpoints.Consignment.Models;
+using shs.Domain.Application.Model;
+using CreateConsignmentItem = shs.Domain.Application.Model.CreateConsignmentItem;
 
 namespace shs.Api.Presentation.Endpoints.Consignment;
 
@@ -21,22 +23,21 @@ public static class Mapper
         };
     }
     
-    public static ConsignmentEntity ToEntity(this CreateConsignmentRequest request)
+   public static CreateConsignment ToService(this CreateConsignmentRequest consignment)
     {
-        return new ConsignmentEntity
+        return new CreateConsignment()
         {
-            SupplierId = request.SupplierId,
-            ConsignmentDate = request.ConsignmentDate,
-            PickupDate = request.PickupDate,
-            Items = request.Items.Select(i => new ConsignmentItemEntity
+            SupplierId = consignment.SupplierId,
+            ConsignmentDate = consignment.ConsignmentDate,
+            Items = consignment.Items.Select(i => new CreateConsignmentItem
             {
-                Status = i.Status,
                 Size = i.Size,
                 BrandId = i.BrandId,
                 Name = i.Name,
                 Description = i.Description,
                 EvaluatedValue = i.Price,
-                Tags = i.TagIds.Select(t => new ConsignmentItemTagEntity { TagId = t }).ToList(),
+                Tags = i.TagIds,
+                Color = i.Color
             }).ToList()
         };
     }

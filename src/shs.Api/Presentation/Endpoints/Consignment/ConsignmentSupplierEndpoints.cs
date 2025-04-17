@@ -89,13 +89,32 @@ public static class ConsignmentSupplierEndpoints
             return Results.NoContent();
         });
 
-        group.MapPost("/", async (ShsDbContext db, CreateConsignmentRequest request, CancellationToken ct) =>
+        group.MapPost("/", async (IConsignmentService service, CreateConsignmentRequest request, CancellationToken ct) =>
         {
-            var consignment = request.ToEntity();
-            await db.Consignments.AddAsync(consignment, ct);
-            await db.SaveChangesAsync(ct);
+            var consignment = await service.CreateConsignmentAsync(request.ToService(), ct);
             return Results.Created($"/api/consignments/{consignment.Id}", request);
         });
+
+        // Add this to the MapConsignmentsEndpoints method in ConsignmentSupplierEndpoints.cs
+        group.MapGet("/owners/all", 
+            async (IConsignmentService service, CancellationToken ct) =>
+            {
+                // Using the existing service but with a large value for Take to get all suppliers
+                // We could consider adding a dedicated method to the service for this case
+                var result = await service.SearchSupplierAsync(0, int.MaxValue, ct);
+        
+                return Results.Ok(result.Items.Select(p => new ConsignmentSupplierResponse()
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Email = p.Email,
+                    PhoneNumber = p.PhoneNumber,
+                    Address = p.Address,
+                    Initials = p.Initial,
+                    CommissionPercentageInCash = p.CommissionPercentageInCash,
+                    CommissionPercentageInProducts = p.CommissionPercentageInProducts
+                }).ToList());
+            });
 
         //     group.MapGet("/owners/{id:long}/consigned", async (ShsDbContext db, long id, CancellationToken ct) =>
         //         await db.Consignments
