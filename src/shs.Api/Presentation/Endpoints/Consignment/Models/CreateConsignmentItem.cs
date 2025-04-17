@@ -8,10 +8,10 @@ public record CreateConsignmentItem(
     decimal Price)
 {
     public ConsignmentStatusType Status { get; set; }
-    public ProductSizeType Size { get; set; }
+    public required string Size { get; set; }
     public long BrandId { get; set; }
-    
-    public IReadOnlyCollection<long> TagIds { get; set; }
+    public IReadOnlyCollection<long> TagIds { get; set; } = new List<long>();
+    public string? Color { get; set; }
 }
 
 public record ConsignmentResponse(

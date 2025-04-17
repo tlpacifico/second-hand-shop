@@ -13,7 +13,11 @@ public class ConsignmentItemConfiguration : IEntityTypeConfiguration<Consignment
         builder.MapAuditableRecord();
         builder.MapSoftDelete();
         builder.MapSoftDeleteQueryFilter();
-        
+
+        builder.Property(ci => ci.IdentificationNumber)
+            .IsRequired()
+            .HasMaxLength(15);   //TLP2025010000
+     
         builder.Property(ci => ci.ConsignmentId)
             .IsRequired();
         
@@ -31,7 +35,12 @@ public class ConsignmentItemConfiguration : IEntityTypeConfiguration<Consignment
             .HasMaxLength(200);
         
         builder.Property(ci => ci.Color)
+            .IsRequired()
             .HasMaxLength(50);
+        
+        builder.Property(ci => ci.Size)
+            .IsRequired()
+            .HasMaxLength(10);
         
         builder.Property(ci => ci.EvaluatedValue)
             .IsRequired();
