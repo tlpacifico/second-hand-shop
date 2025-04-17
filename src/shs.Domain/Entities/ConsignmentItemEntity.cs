@@ -6,8 +6,10 @@ namespace shs.Api.Domain.Entities;
 public class ConsignmentItemEntity : EntityWithIdAuditable<long>, IHaveSoftDelete
 {
     public long ConsignmentId { get; set; }
+    
+    public required string IdentificationNumber { get; set; } // It's a unique identifier for the item in the store Initial of supplier + year + month + sequence number
     public ConsignmentStatusType Status { get; set; }
-    public required ProductSizeType Size { get; set; }
+    public required string Size { get; set; }
     public long BrandId { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }
