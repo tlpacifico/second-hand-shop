@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Plus, Trash } from "lucide-react"
-import { consignments, store } from "@/lib/api"
+import { consignments, ConsignmentSupplierEntity, store } from "@/lib/api"
 import { MultiSelect } from "@/components/ui/multi-select"
 
 interface Owner {
@@ -44,7 +44,7 @@ interface Tag {
 
 export default function NewItemPage() {
   const router = useRouter()
-  const [owners, setOwners] = useState<any>({})
+  const [owners, setOwners] = useState<ConsignmentSupplierEntity[]>([])
   const [tags, setTags] = useState<Tag[]>([])
   const [brands, setBrands] = useState<Brand[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -64,7 +64,7 @@ export default function NewItemPage() {
   useEffect(() => {
     const fetchOwners = async () => {
       try {
-        const response = await consignments.getOwners()
+        const response = await consignments.getAllOwners()
         setOwners(response)
       } catch (error) {
         console.error("Error fetching owners:", error)
@@ -166,7 +166,7 @@ export default function NewItemPage() {
                     <SelectValue placeholder={isLoading ? "Loading owners..." : "Select an owner"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {owners.items.map((owner : any) => (
+                    {owners.map((owner : any) => (
                       <SelectItem key={owner.id} value={owner.id.toString()}>
                         {owner.name}
                       </SelectItem>

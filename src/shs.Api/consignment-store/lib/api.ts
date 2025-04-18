@@ -42,7 +42,7 @@ export interface ConsignmentSupplierEntity {
   name: string;
   email: string;
   phoneNumber: string;
-  initial: string;
+  initials: string;
   commissionPercentageInCash?: number;
   commissionPercentageInProducts?: number;
   address?: string;
@@ -93,6 +93,10 @@ export const auth = {
 export const consignments = {
   getOwners: async (skip = 0, take = 10): Promise<PagedModel<ConsignmentSupplierEntity>> => {
     const response = await api.get(`/api/consignments/owners?skip=${skip}&take=${take}`);
+    return response.data;
+  },
+  getAllOwners: async (): Promise<ConsignmentSupplierEntity[]> => {
+    const response = await api.get(`/api/consignments/owners/all`);
     return response.data;
   },
   getOwner: async (id: number): Promise<ConsignmentSupplierEntity> => {

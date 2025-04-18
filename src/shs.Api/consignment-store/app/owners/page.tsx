@@ -100,7 +100,7 @@ export default function OwnersPage() {
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Phone</TableHead>
-                    <TableHead>Items</TableHead>
+                    <TableHead>Initial</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -110,7 +110,7 @@ export default function OwnersPage() {
                       <TableCell className="font-medium">{owner.name}</TableCell>
                       <TableCell>{owner.email}</TableCell>
                       <TableCell>{owner.phoneNumber}</TableCell>
-                      <TableCell>{owner.initial}</TableCell>
+                      <TableCell>{owner.initials}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="sm" asChild>
                           <Link href={`/owners/${owner.id}`}>View</Link>
