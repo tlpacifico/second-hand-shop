@@ -18,7 +18,7 @@ public class ConsignmentRepository(ShsDbContext dbContext) : IConsignmentReposit
         return result;
     }
 
-    public async Task<ConsignmentSupplierEntity?> GetSupplierByIdAsync(long id, CancellationToken ct)
+    public async Task<ConsignmentSupplierEntity> GetSupplierByIdAsync(long id, CancellationToken ct)
     {
         return await dbContext.ConsignmentSuppliers.GetByIdAndEnsureExistsAsync(id, ct);
     }
@@ -35,5 +35,23 @@ public class ConsignmentRepository(ShsDbContext dbContext) : IConsignmentReposit
         dbContext.ConsignmentSuppliers.Update(supplier);
         await dbContext.SaveChangesAsync(ct);
         return supplier;
+    }
+
+    public async  Task<ConsignmentEntity> CreateConsignmentAsync(ConsignmentEntity consignment, CancellationToken ct)
+    {
+        var result = await dbContext.Consignments.AddAsync(consignment, ct);
+        await dbContext.SaveChangesAsync(ct);
+        return result.Entity;
+    }
+
+    public Task<ConsignmentItemEntity?> GetLastConsignmentItemOfSupplierAsync(long supplier, CancellationToken ct)
+    {
+        var query = from c in dbContext.Consignments
+            join i in dbContext.ConsignmentItems on c.Id equals i.ConsignmentId
+            where c.SupplierId == supplier
+            orderby c.ConsignmentDate descending
+            select i;
+        
+        return query.AsNoTracking().FirstOrDefaultAsync(ct);
     }
 }
