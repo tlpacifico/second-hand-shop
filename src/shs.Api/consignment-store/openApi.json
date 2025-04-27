@@ -354,6 +354,98 @@
         }
       }
     },
+    "/api/consignments": {
+      "get": {
+        "tags": [
+          "shs.Api"
+        ],
+        "parameters": [
+          {
+            "name": "Skip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Take",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageWithTotalOfConsignmentSearchResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "shs.Api"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateConsignmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/consignments/{id:long}": {
+      "get": {
+        "tags": [
+          "shs.Api"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsignmentDetailResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/api/consignments/owners": {
       "get": {
         "tags": [
@@ -381,7 +473,14 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageWithTotalOfConsignmentSupplierResponse"
+                }
+              }
+            }
           }
         }
       },
@@ -400,8 +499,8 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created"
           }
         }
       }
@@ -424,7 +523,17 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsignmentSupplierResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       },
@@ -481,24 +590,24 @@
         }
       }
     },
-    "/api/consignments": {
-      "post": {
+    "/api/consignments/owners/all": {
+      "get": {
         "tags": [
           "shs.Api"
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateConsignmentRequest"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConsignmentSupplierResponse"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -602,6 +711,102 @@
           }
         }
       },
+      "ConsignmentDetailResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "supplierId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "consignmentDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConsignmentItemResponse"
+            }
+          }
+        }
+      },
+      "ConsignmentItemResponse": {
+        "required": [
+          "identificationNumber",
+          "size",
+          "name",
+          "evaluatedValue"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "identificationNumber": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ConsignmentStatusType"
+          },
+          "size": {
+            "type": "string"
+          },
+          "brandId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "color": {
+            "type": "string",
+            "nullable": true
+          },
+          "evaluatedValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "tagIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        }
+      },
+      "ConsignmentSearchResult": {
+        "required": [
+          "supplierName"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "consignmentDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "supplierName": {
+            "type": "string"
+          },
+          "totalItems": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "ConsignmentStatusType": {
         "type": "integer"
       },
@@ -672,11 +877,51 @@
           }
         }
       },
+      "ConsignmentSupplierResponse": {
+        "required": [
+          "name",
+          "email",
+          "phoneNumber",
+          "initials"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "initials": {
+            "type": "string"
+          },
+          "commissionPercentageInCash": {
+            "type": "number",
+            "format": "double"
+          },
+          "commissionPercentageInProducts": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
       "CreateConsignmentItem": {
         "required": [
           "name",
           "description",
-          "price"
+          "price",
+          "size"
         ],
         "type": "object",
         "properties": {
@@ -691,11 +936,8 @@
             "type": "number",
             "format": "double"
           },
-          "status": {
-            "$ref": "#/components/schemas/ConsignmentStatusType"
-          },
           "size": {
-            "$ref": "#/components/schemas/ProductSizeType"
+            "type": "string"
           },
           "brandId": {
             "type": "integer",
@@ -707,6 +949,10 @@
               "type": "integer",
               "format": "int64"
             }
+          },
+          "color": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -714,7 +960,6 @@
         "required": [
           "supplierId",
           "consignmentDate",
-          "pickupDate",
           "items"
         ],
         "type": "object",
@@ -726,11 +971,6 @@
           "consignmentDate": {
             "type": "string",
             "format": "date-time"
-          },
-          "pickupDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
           },
           "items": {
             "type": "array",
@@ -876,8 +1116,63 @@
           }
         }
       },
-      "ProductSizeType": {
-        "type": "integer"
+      "PageWithTotalOfConsignmentSearchResult": {
+        "required": [
+          "total",
+          "skip",
+          "take",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "skip": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "take": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConsignmentSearchResult"
+            }
+          }
+        }
+      },
+      "PageWithTotalOfConsignmentSupplierResponse": {
+        "required": [
+          "total",
+          "skip",
+          "take",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "skip": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "take": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConsignmentSupplierResponse"
+            }
+          }
+        }
       },
       "RefreshRequest": {
         "required": [

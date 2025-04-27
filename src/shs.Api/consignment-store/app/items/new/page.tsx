@@ -23,8 +23,7 @@ interface Owner {
 
 interface Item {
   name: string;
-  description: string;
-  condition: string;
+  description: string; 
   price: string;
   color: string;
   brandId: string;
@@ -51,8 +50,7 @@ export default function NewItemPage() {
   const [ownerId, setOwnerId] = useState("")
   const [items, setItems] = useState<Item[]>([{
     name: "",
-    description: "",
-    condition: "",
+    description: "", 
     price: "",
     color: "",
     brandId: "",
@@ -103,7 +101,7 @@ export default function NewItemPage() {
   }
 
   const addItem = () => {
-    setItems([...items, { name: "", description: "", condition: "", price: "", color: "", brandId: "", tags: [], size: "", receiveDate: new Date().toISOString().split('T')[0] }])
+    setItems([...items, { name: "", description: "", price: "", color: "", brandId: "", tags: [], size: "", receiveDate: new Date().toISOString().split('T')[0] }])
   }
 
   const removeItem = (index: number) => {
@@ -124,13 +122,11 @@ export default function NewItemPage() {
           name: item.name,
           description: item.description,
           price: parseFloat(item.price),
-          condition: item.condition,
           color: item.color,
           brandId: parseInt(item.brandId),
           tagIds: item.tags.map(tag => parseInt(tag)),
-          size: parseInt(item.size),
-          receiveDate: item.receiveDate,
-          status: 0 // Assuming 0 is the initial status
+          size: item.size,
+          receiveDate: item.receiveDate
         }))
       })
       router.push("/items")
@@ -230,26 +226,7 @@ export default function NewItemPage() {
                           rows={2}
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor={`item-condition-${index}`}>Condition</Label>
-                        <Select
-                          value={item.condition}
-                          onValueChange={(value) => handleItemChange(index, "condition", value)}
-                          required
-                        >
-                          <SelectTrigger id={`item-condition-${index}`}>
-                            <SelectValue placeholder="Select condition" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="new">New</SelectItem>
-                            <SelectItem value="like-new">Like New</SelectItem>
-                            <SelectItem value="excellent">Excellent</SelectItem>
-                            <SelectItem value="good">Good</SelectItem>
-                            <SelectItem value="fair">Fair</SelectItem>
-                            <SelectItem value="poor">Poor</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor={`item-color-${index}`}>Color</Label>
@@ -284,23 +261,14 @@ export default function NewItemPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor={`item-size-${index}`}>Size</Label>
-                          <Select
+                          <Input
+                            id={`item-size-${index}`}
+                            type="text"
                             value={item.size}
-                            onValueChange={(value) => handleItemChange(index, "size", value)}
+                            onChange={(e) => handleItemChange(index, "size", e.target.value)}
+                            placeholder="Enter size (e.g. XS, S, M, L, XL, XXL)"
                             required
-                          >
-                            <SelectTrigger id={`item-size-${index}`}>
-                              <SelectValue placeholder="Select size" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="XS">XS</SelectItem>
-                              <SelectItem value="S">S</SelectItem>
-                              <SelectItem value="M">M</SelectItem>
-                              <SelectItem value="L">L</SelectItem>
-                              <SelectItem value="XL">XL</SelectItem>
-                              <SelectItem value="XXL">XXL</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor={`item-receive-date-${index}`}>Receive Date</Label>

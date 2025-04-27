@@ -64,8 +64,8 @@ export function MultiSelect({
                 }}
               >
                 {options.find((option) => option.value === item)?.label}
-                <button
-                  className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                <div
+                  className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleUnselect(item)
@@ -80,9 +80,11 @@ export function MultiSelect({
                     e.stopPropagation()
                     handleUnselect(item)
                   }}
+                  role="button"
+                  tabIndex={0}
                 >
                   <X className="h-3 w-3" />
-                </button>
+                </div>
               </Badge>
             ))}
           </div>

@@ -56,6 +56,33 @@ export interface ConsignmentSupplierEntity {
   updatedBy?: string;
 }
 
+export interface ConsignmentSearchResult {
+  id: number;
+  consignmentDate: string;
+  supplierName: string;
+  totalItems: number;
+}
+
+export interface ConsignmentItemResponse {
+  id: number;
+  identificationNumber: string;
+  status: number;
+  size: string;
+  brandId?: number;
+  name: string;
+  description?: string;
+  color?: string;
+  evaluatedValue: number;
+  tagIds?: number[];
+}
+
+export interface ConsignmentDetailResponse {
+  id: number;
+  supplierId: number;
+  consignmentDate: string;
+  items: ConsignmentItemResponse[];
+}
+
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true, // This is important for cookie handling
@@ -132,13 +159,21 @@ export const consignments = {
       description?: string;
       price: number;
       status?: number;
-      size?: number;
+      size?: string;
       brandId?: number;
       tagIds?: number[];
     }>;
   }): Promise<void> => {
     await api.post('/api/consignments', data);
   },
+  getPaginatedConsignments: async (skip = 0, take = 10): Promise<PagedModel<ConsignmentSearchResult>> => {
+    const response = await api.get(`/api/consignments?Skip=${skip}&Take=${take}`);
+    return response.data;
+  },
+  getConsignmentDetails: async (id: number): Promise<ConsignmentDetailResponse> => {
+    const response = await api.get(`/api/consignments/${id}`);
+    return response.data;
+  }
 };
 
 export const store = { 
