@@ -87,3 +87,4 @@ app.MapStoreEndpoints();
 
 app.Run();
 
+public partial class Program { }
