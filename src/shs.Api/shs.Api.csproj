@@ -7,6 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="consignment-store\**" />
+      <Content Remove="consignment-store\**" />
+      <EmbeddedResource Remove="consignment-store\**" />
+      <None Remove="consignment-store\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\shs.Application\shs.Application.csproj" />
         <ProjectReference Include="..\shs.Domain\shs.Domain.csproj" />
         <ProjectReference Include="..\shs.Infrastructure\shs.Infrastructure.csproj" />
@@ -15,7 +22,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0-rc.2.24474.3" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0-rc.2.24474.3" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-rc.2.24474.3"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-rc.2.24474.3" />
         <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="9.0.0-rc.2.24474.3" />
         <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="9.0.0-rc.2.24474.3" />        
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0-rc.2" />

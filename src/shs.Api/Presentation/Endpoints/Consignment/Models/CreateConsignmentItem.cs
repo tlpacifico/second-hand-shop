@@ -7,7 +7,6 @@ public record CreateConsignmentItem(
     string? Description,
     decimal Price)
 {
-    public ConsignmentStatusType Status { get; set; }
     public required string Size { get; set; }
     public long BrandId { get; set; }
     public IReadOnlyCollection<long> TagIds { get; set; } = new List<long>();

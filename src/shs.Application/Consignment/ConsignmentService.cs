@@ -43,10 +43,27 @@ public class ConsignmentService(IConsignmentRepository repository) : IConsignmen
         {
             SupplierId = request.SupplierId,
             ConsignmentDate = request.ConsignmentDate,
-            Items = consignmentItems
+            Items = consignmentItems,
         };
         
         return await repository.CreateConsignmentAsync(consignment, ct);
+    }
+
+    public async Task<PageWithTotal<ConsignmentSearchResult>> SearchAsync(int pageSkip, int pageTake, CancellationToken ct)
+    {
+        var result = await repository.SearchAsync(pageSkip, pageTake, ct);
+        
+        return new PageWithTotal<ConsignmentSearchResult>(
+            pageSkip,
+            pageTake,
+            result.Items.Select(p => new ConsignmentSearchResult()
+            {
+                Id = p.Id,
+                SupplierName = p.Supplier!.Name,
+                ConsignmentDate = p.ConsignmentDate,
+                TotalItems = p.Items!.Count,
+            }).ToList(),
+            result.Total);
     }
 
     private List<ConsignmentItemEntity> CreateConsignmentItems(
@@ -79,7 +96,14 @@ public class ConsignmentService(IConsignmentRepository repository) : IConsignmen
             Description = item.Description,
             EvaluatedValue = item.EvaluatedValue,
             Tags = item.Tags.Select(tagId => new ConsignmentItemTagEntity { TagId = tagId }).ToList(),
-            Color = item.Color
+            Color = item.Color,
+            PaymentMethod = new ConsignmentPaymentMethod()
+            {
+                PaymentAmount = null,
+                PaymentType = null,
+                PaymentDate = null,
+                PaymentPercentage = null,
+            }
         };
     }
 

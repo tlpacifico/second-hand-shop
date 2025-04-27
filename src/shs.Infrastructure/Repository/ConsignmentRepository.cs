@@ -54,4 +54,15 @@ public class ConsignmentRepository(ShsDbContext dbContext) : IConsignmentReposit
         
         return query.AsNoTracking().FirstOrDefaultAsync(ct);
     }
+
+    public async Task<PageWithTotal<ConsignmentEntity>> SearchAsync(int pageSkip, int pageTake, CancellationToken ct)
+    {
+        var result = await dbContext.Consignments
+            .Include(p => p.Supplier)
+            .Include(p => p.Items)
+            .AsPageWithTotalAsync(
+            pageSkip,
+            pageTake, ct);
+        return result;
+    }
 }

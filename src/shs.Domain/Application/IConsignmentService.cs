@@ -20,4 +20,5 @@ public interface IConsignmentService
     Task<ConsignmentEntity> CreateConsignmentAsync(CreateConsignment request, CancellationToken ct);
 
 
+    Task<PageWithTotal<ConsignmentSearchResult>> SearchAsync(int pageSkip, int pageTake, CancellationToken ct);
 }

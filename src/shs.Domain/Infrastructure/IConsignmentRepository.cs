@@ -20,4 +20,5 @@ public interface IConsignmentRepository
     public Task<ConsignmentEntity> CreateConsignmentAsync(ConsignmentEntity consignment, CancellationToken ct);
     
     public Task<ConsignmentItemEntity?> GetLastConsignmentItemOfSupplierAsync(long supplier, CancellationToken ct);
+    Task<PageWithTotal<ConsignmentEntity>> SearchAsync(int pageSkip, int pageTake, CancellationToken ct);
 }
