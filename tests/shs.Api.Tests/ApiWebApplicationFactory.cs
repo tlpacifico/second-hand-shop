@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using shs.Api.Domain.Entities;
+using shs.Api.Tests;
 using shs.Database.Database;
 using Testcontainers.PostgreSql;
 using Xunit.Sdk;
 using Xunit.v3;
-
+[assembly:AssemblyFixture(typeof(ApiWebApplicationFactory<Program>))]
 namespace shs.Api.Tests;
+
 
 public class ApiWebApplicationFactory<TProgram>
     : WebApplicationFactory<TProgram> , IAsyncLifetime where TProgram : class

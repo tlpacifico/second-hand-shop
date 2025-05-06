@@ -13,6 +13,18 @@ public record CreateConsignmentItem(
     public string? Color { get; set; }
 }
 
+public record UpdateConsignmentItem(
+    long Id,
+    string Name,
+    string? Description,
+    decimal Price)
+{
+    public required string Size { get; set; }
+    public long BrandId { get; set; }
+    public IReadOnlyCollection<long> TagIds { get; set; } = new List<long>();
+    public string? Color { get; set; }
+}
+
 public record ConsignmentResponse(
     long Id,
     ConsignmentSupplierResponse Supplier,

@@ -17,47 +17,49 @@ public static class ConsignmentEndpoints
     public static void MapConsignmentsEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup(ApiConstants.ConsignmentRoutes.Path).RequireAuthorization();
-        
+
         group.MapGet(ApiConstants.ConsignmentRoutes.Consignments,
             async ([AsParameters] GetPage page, IConsignmentService service, CancellationToken ct) =>
             {
                 var result = await service.SearchAsync(page.Skip, page.Take, ct);
                 return Results.Ok(result);
             }).Produces<PageWithTotal<ConsignmentSearchResult>>();
-        
+
 
         group.MapGet(ApiConstants.ConsignmentRoutes.ConsignmentById,
-            async (ShsDbContext context, [FromRoute]  long id, CancellationToken ct) =>
-            {
-                var consignment = await context.Consignments
-                    .Include(p => p.Items)!
-                    .ThenInclude(p => p.Tags)
-                    .FirstOrDefaultAsync(p => p.Id == id, ct);
-                
-                return consignment is null
-                    ? Results.NotFound()
-                    : Results.Ok(new ConsignmentDetailResponse()
-                    {
-                        Id = consignment.Id,
-                        SupplierId = consignment.SupplierId,
-                        ConsignmentDate = consignment.ConsignmentDate,
-                        Items = consignment.Items!.Select(p => new ConsignmentItemResponse()
+                async (ShsDbContext context, [FromRoute] long id, CancellationToken ct) =>
+                {
+                    var consignment = await context.Consignments
+                        .Include(p => p.Items)!
+                        .ThenInclude(p => p.Tags)
+                        .FirstOrDefaultAsync(p => p.Id == id, ct);
+
+                    return consignment is null
+                        ? Results.NotFound()
+                        : Results.Ok(new ConsignmentDetailResponse()
                         {
-                            Id = p.Id,
-                            Name = p.Name,
-                            IdentificationNumber = p.IdentificationNumber,
-                            Status = p.Status,
-                            EvaluatedValue = p.EvaluatedValue,
-                            Size = p.Size,
-                            BrandId = p.BrandId,
-                            Color = p.Color,
-                            Description = p.Description,
-                            TagIds = p.Tags!.Select(t => t.TagId).ToList()
-                        }).ToList()
-                    });
-            }).Produces<ConsignmentDetailResponse>()
+                            Id = consignment.Id,
+                            SupplierId = consignment.SupplierId,
+                            ConsignmentDate = consignment.ConsignmentDate,
+                            Items = consignment.Items!.Select(p => new ConsignmentItemResponse()
+                            {
+                                Id = p.Id,
+                                Name = p.Name,
+                                IdentificationNumber = p.IdentificationNumber,
+                                Status = p.Status,
+                                EvaluatedValue = p.EvaluatedValue,
+                                Size = p.Size,
+                                BrandId = p.BrandId,
+                                Color = p.Color,
+                                Description = p.Description,
+                                TagIds = p.Tags!.Select(t => t.TagId).ToList()
+                            }).ToList()
+                        });
+                }).Produces<ConsignmentDetailResponse>()
             .Produces(StatusCodes.Status404NotFound);
-        
+
+
+
         group.MapGet(ApiConstants.ConsignmentRoutes.Owners,
             async ([AsParameters] GetPage page, IConsignmentService service, CancellationToken ct) =>
             {
@@ -77,27 +79,28 @@ public static class ConsignmentEndpoints
                         CommissionPercentageInProducts = p.CommissionPercentageInProducts
                     }).ToList(),
                     result.Total));
-            }).Produces<PageWithTotal<ConsignmentSupplierResponse>>();;
+            }).Produces<PageWithTotal<ConsignmentSupplierResponse>>();
+        ;
 
         group.MapGet(ApiConstants.ConsignmentRoutes.OwnersById,
-            async (IConsignmentService service, long id, CancellationToken ct) =>
-            {
-                var supplier = await service.GetSupplierByIdAsync(id, ct);
+                async (IConsignmentService service, long id, CancellationToken ct) =>
+                {
+                    var supplier = await service.GetSupplierByIdAsync(id, ct);
 
-                return supplier is null
-                    ? Results.NotFound()
-                    : Results.Ok(new ConsignmentSupplierResponse()
-                    {
-                        Id = supplier.Id,
-                        Name = supplier.Name,
-                        Email = supplier.Email,
-                        PhoneNumber = supplier.PhoneNumber,
-                        Address = supplier.Address,
-                        Initials = supplier.Initial,
-                        CommissionPercentageInCash = supplier.CommissionPercentageInCash,
-                        CommissionPercentageInProducts = supplier.CommissionPercentageInProducts
-                    });
-            }).Produces<ConsignmentSupplierResponse>()
+                    return supplier is null
+                        ? Results.NotFound()
+                        : Results.Ok(new ConsignmentSupplierResponse()
+                        {
+                            Id = supplier.Id,
+                            Name = supplier.Name,
+                            Email = supplier.Email,
+                            PhoneNumber = supplier.PhoneNumber,
+                            Address = supplier.Address,
+                            Initials = supplier.Initial,
+                            CommissionPercentageInCash = supplier.CommissionPercentageInCash,
+                            CommissionPercentageInProducts = supplier.CommissionPercentageInProducts
+                        });
+                }).Produces<ConsignmentSupplierResponse>()
             .Produces(StatusCodes.Status404NotFound);
 
         group.MapPost(ApiConstants.ConsignmentRoutes.Owners,
@@ -136,13 +139,23 @@ public static class ConsignmentEndpoints
             return Results.NoContent();
         });
 
-        group.MapPost(ApiConstants.ConsignmentRoutes.Create,
-            async (IConsignmentService service, CreateConsignmentRequest request, CancellationToken ct) =>
+        group.MapPost(ApiConstants.ConsignmentRoutes.Create, async (IConsignmentService service,
+            CreateConsignmentRequest request, CancellationToken ct) =>
+        {
+            var consignment = await service.CreateConsignmentAsync(request.ToService(), ct);
+            return Results.Created($"{ApiConstants.ConsignmentRoutes.Path}/{consignment.Id}", request);
+        });
+        
+        group.MapPut(ApiConstants.ConsignmentRoutes.UpdateConsignment, async (IConsignmentService service,
+                [FromRoute] long id, [FromBody] UpdateConsignmentRequest request,
+                CancellationToken ct) =>
             {
-                var consignment = await service.CreateConsignmentAsync(request.ToService(), ct);
-                return Results.Created($"{ApiConstants.ConsignmentRoutes.Path}/{consignment.Id}", request);
-            });
-      
+                await service.UpdateAsync(request.ToService(id), ct);
+
+                return Results.Accepted();
+            }).Produces(StatusCodes.Status202Accepted)
+            .Produces(StatusCodes.Status404NotFound);
+
         group.MapGet(ApiConstants.ConsignmentRoutes.OwnersAll,
             async (IConsignmentService service, CancellationToken ct) =>
             {

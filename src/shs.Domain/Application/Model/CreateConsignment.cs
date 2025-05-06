@@ -9,6 +9,17 @@ public class CreateConsignment
     public virtual ICollection<CreateConsignmentItem> Items { get; set; } = new List<CreateConsignmentItem>();
 }
 
+public class UpdateConsignment
+{
+    public long Id { get; set; }
+    public long SupplierId { get; set; }
+    public DateTime ConsignmentDate { get; set; }
+    public ICollection<CreateConsignmentItem> NewItems { get; set; } = new List<CreateConsignmentItem>();
+    public ICollection<UpdateConsignmentItem> UpdateItems { get; set; } = new List<UpdateConsignmentItem>();
+    public ICollection<long> DeletedItemsIds { get; set; } = new List<long>();
+    
+}
+
 public class ConsignmentSupplier 
 {
     public required string Name { get; set; }
@@ -27,6 +38,20 @@ public class ConsignmentSupplier
 
 public class CreateConsignmentItem
 {
+    public long ConsignmentId { get; set; }
+    public required string Size { get; set; }
+    public long BrandId { get; set; }
+    public required string Name { get; set; }
+    public string? Description { get; set; }
+    public string? Color { get; set; }
+    public required decimal EvaluatedValue { get; set; }
+    public  IReadOnlyCollection<long> Tags { get; set; } = new List<long>();
+
+}
+
+public class UpdateConsignmentItem
+{
+    public long Id { get; set; }
     public long ConsignmentId { get; set; }
     public required string Size { get; set; }
     public long BrandId { get; set; }

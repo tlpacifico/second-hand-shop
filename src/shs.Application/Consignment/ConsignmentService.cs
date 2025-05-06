@@ -37,7 +37,7 @@ public class ConsignmentService(IConsignmentRepository repository) : IConsignmen
         var supplier = await repository.GetSupplierByIdAsync(request.SupplierId, ct);
         var nextItemSequence = await GetNextConsignmentNumberAsync(supplier.Id, ct);
         
-        var consignmentItems = CreateConsignmentItems(request.Items, supplier, ref nextItemSequence);
+        var consignmentItems = CreateConsignmentItems(request.Items, supplier, nextItemSequence);
         
         var consignment = new ConsignmentEntity
         {
@@ -48,6 +48,7 @@ public class ConsignmentService(IConsignmentRepository repository) : IConsignmen
         
         return await repository.CreateConsignmentAsync(consignment, ct);
     }
+    
 
     public async Task<PageWithTotal<ConsignmentSearchResult>> SearchAsync(int pageSkip, int pageTake, CancellationToken ct)
     {
@@ -68,8 +69,7 @@ public class ConsignmentService(IConsignmentRepository repository) : IConsignmen
 
     private List<ConsignmentItemEntity> CreateConsignmentItems(
         IEnumerable<CreateConsignmentItem> requestItems, 
-        ConsignmentSupplierEntity supplier, 
-        ref int sequenceNumber)
+        ConsignmentSupplierEntity supplier, int sequenceNumber)
     {
         var currentDate = DateTime.UtcNow;
         var items = new List<ConsignmentItemEntity>();
@@ -83,6 +83,7 @@ public class ConsignmentService(IConsignmentRepository repository) : IConsignmen
         
         return items;
     }
+    
 
     private static ConsignmentItemEntity CreateConsignmentItemEntity(CreateConsignmentItem item, string identificationNumber)
     {
@@ -107,9 +108,49 @@ public class ConsignmentService(IConsignmentRepository repository) : IConsignmen
         };
     }
 
-    private static string BuildIdentificationNumber(string supplierInitial, DateTime date, int sequence)
+    public string BuildIdentificationNumber(string supplierInitial, DateTime date, int sequence)
     {
         return $"{supplierInitial}{date:yyyyMM}{sequence:D4}";
+    }
+
+    public async Task UpdateAsync(UpdateConsignment model, CancellationToken ct)
+    {
+        ConsignmentEntity consignment = await repository.GetByIdAsync(model.Id, ct);
+        if (consignment == null)
+        {
+            throw new ArgumentException($"Consignment with id {model.Id} not found");
+        }
+        consignment.ConsignmentDate = model.ConsignmentDate;
+        consignment.SupplierId = model.SupplierId;
+        foreach (var deletedId in model.DeletedItemsIds)
+        {
+            var item = consignment.Items!.First(p => p.Id == deletedId);
+            consignment.Items!.Remove(item);
+        }
+      
+        if(model.NewItems.Count > 0)
+        {
+            var supplier = await repository.GetSupplierByIdAsync(consignment.SupplierId, ct);
+            var nextItemSequence = await GetNextConsignmentNumberAsync(supplier.Id, ct);
+        
+            var consignmentItems = CreateConsignmentItems(model.NewItems, supplier, nextItemSequence);
+            consignment.Items!.AddRange(consignmentItems);
+        }
+        
+        foreach (var item in model.UpdateItems)
+        {
+            var consignmentItem = consignment.Items!.First(p => p.Id == item.Id);
+            consignmentItem.Size = item.Size;
+            consignmentItem.BrandId = item.BrandId;
+            consignmentItem.Name = item.Name;
+            consignmentItem.Description = item.Description;
+            consignmentItem.Color = item.Color;
+            consignmentItem.EvaluatedValue = item.EvaluatedValue;
+            consignmentItem.Tags = item.Tags.Select(tagId => new ConsignmentItemTagEntity { TagId = tagId }).ToList();
+        }
+        
+        await repository.UpdateAsync(consignment, ct);
+        
     }
 
     private async Task<int> GetNextConsignmentNumberAsync(long supplierId, CancellationToken ct)

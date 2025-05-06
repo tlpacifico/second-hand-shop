@@ -21,4 +21,6 @@ public interface IConsignmentService
 
 
     Task<PageWithTotal<ConsignmentSearchResult>> SearchAsync(int pageSkip, int pageTake, CancellationToken ct);
+    string BuildIdentificationNumber(string supplierInitial, DateTime date, int sequence);
+    Task UpdateAsync(UpdateConsignment toService, CancellationToken ct);
 }

@@ -23,21 +23,23 @@ public class ConsignmentRepository(ShsDbContext dbContext) : IConsignmentReposit
         return await dbContext.ConsignmentSuppliers.GetByIdAndEnsureExistsAsync(id, ct);
     }
 
-    public async Task<ConsignmentSupplierEntity> CreateSupplierAsync(ConsignmentSupplierEntity supplier, CancellationToken ct)
+    public async Task<ConsignmentSupplierEntity> CreateSupplierAsync(ConsignmentSupplierEntity supplier,
+        CancellationToken ct)
     {
         var result = await dbContext.ConsignmentSuppliers.AddAsync(supplier, ct);
         await dbContext.SaveChangesAsync(ct);
         return result.Entity;
     }
 
-    public async Task<ConsignmentSupplierEntity> UpdateSupplierAsync(ConsignmentSupplierEntity supplier, CancellationToken ct)
+    public async Task<ConsignmentSupplierEntity> UpdateSupplierAsync(ConsignmentSupplierEntity supplier,
+        CancellationToken ct)
     {
         dbContext.ConsignmentSuppliers.Update(supplier);
         await dbContext.SaveChangesAsync(ct);
         return supplier;
     }
 
-    public async  Task<ConsignmentEntity> CreateConsignmentAsync(ConsignmentEntity consignment, CancellationToken ct)
+    public async Task<ConsignmentEntity> CreateConsignmentAsync(ConsignmentEntity consignment, CancellationToken ct)
     {
         var result = await dbContext.Consignments.AddAsync(consignment, ct);
         await dbContext.SaveChangesAsync(ct);
@@ -51,7 +53,7 @@ public class ConsignmentRepository(ShsDbContext dbContext) : IConsignmentReposit
             where c.SupplierId == supplier
             orderby c.ConsignmentDate descending
             select i;
-        
+
         return query.AsNoTracking().FirstOrDefaultAsync(ct);
     }
 
@@ -61,8 +63,24 @@ public class ConsignmentRepository(ShsDbContext dbContext) : IConsignmentReposit
             .Include(p => p.Supplier)
             .Include(p => p.Items)
             .AsPageWithTotalAsync(
-            pageSkip,
-            pageTake, ct);
+                pageSkip,
+                pageTake, ct);
         return result;
+    }
+
+    public async Task<ConsignmentEntity> GetByIdAsync(long modelId, CancellationToken ct)
+    {
+        var result = await dbContext.Consignments
+            .Include(p => p.Items)
+            .ThenInclude(p => p.Tags)
+            .FirstAsync(p => p.Id == modelId, ct);
+        
+        return result;
+    }
+
+    public async Task UpdateAsync(ConsignmentEntity consignment, CancellationToken ct)
+    {
+        dbContext.Consignments.Update(consignment);
+        await dbContext.SaveChangesAsync(ct);
     }
 }
