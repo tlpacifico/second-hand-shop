@@ -39,6 +39,16 @@ public class ConsignmentRepository(ShsDbContext dbContext) : IConsignmentReposit
         return supplier;
     }
 
+    public async Task DeleteSupplierAsync(long id, CancellationToken ct)
+    {
+        var supplier = await dbContext.ConsignmentSuppliers.FindAsync(id, ct);
+        if (supplier != null)
+        {
+            dbContext.ConsignmentSuppliers.Remove(supplier);
+            await dbContext.SaveChangesAsync(ct);
+        }
+    }
+
     public async Task<ConsignmentEntity> CreateConsignmentAsync(ConsignmentEntity consignment, CancellationToken ct)
     {
         var result = await dbContext.Consignments.AddAsync(consignment, ct);

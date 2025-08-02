@@ -16,6 +16,8 @@ public interface IConsignmentRepository
     public Task<ConsignmentSupplierEntity> UpdateSupplierAsync(ConsignmentSupplierEntity supplier,
         CancellationToken ct);
     
+    public Task DeleteSupplierAsync(long id, CancellationToken ct);
+    
     // New method for creating consignments
     public Task<ConsignmentEntity> CreateConsignmentAsync(ConsignmentEntity consignment, CancellationToken ct);
     
