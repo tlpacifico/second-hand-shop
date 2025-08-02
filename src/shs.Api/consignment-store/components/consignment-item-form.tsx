@@ -22,6 +22,7 @@ interface Tag {
 }
 
 interface Item {
+  id: number | null;
   name: string;
   description: string;
   price: string;
@@ -30,6 +31,7 @@ interface Item {
   tags: string[];
   size: string;
   receiveDate: string;
+  isDeleted: boolean
 }
 
 interface ConsignmentItemFormProps {
@@ -61,6 +63,7 @@ export default function ConsignmentItemForm({ mode, initialValues, onSubmit, onC
   const [isLoading, setIsLoading] = useState(true)
   const [ownerId, setOwnerId] = useState(initialValues?.supplierId || "")
   const [items, setItems] = useState<Item[]>(initialValues?.items || [{
+    id: null,
     name: "",
     description: "",
     price: "",
@@ -68,7 +71,8 @@ export default function ConsignmentItemForm({ mode, initialValues, onSubmit, onC
     brandId: "",
     tags: [],
     size: "",
-    receiveDate: new Date().toISOString().split('T')[0]
+    receiveDate: new Date().toISOString().split('T')[0],
+    isDeleted: false
   }])
 
   useEffect(() => {
@@ -103,6 +107,7 @@ export default function ConsignmentItemForm({ mode, initialValues, onSubmit, onC
 
   const addItem = () => {
     setItems([...items, {
+      id: null,
       name: "",
       description: "",
       price: "",
@@ -110,13 +115,21 @@ export default function ConsignmentItemForm({ mode, initialValues, onSubmit, onC
       brandId: "",
       tags: [],
       size: "",
-      receiveDate: new Date().toISOString().split('T')[0]
+      receiveDate: new Date().toISOString().split('T')[0],
+      isDeleted: false
     }]);
   };
 
   const removeItem = (index: number) => {
-    if (items.length > 1) {
-      const newItems = [...items];
+    const newItems = [...items];
+    if(newItems[index].id){
+      newItems[index] = {
+        ...newItems[index],
+        isDeleted: true
+      };
+      setItems(newItems);
+    }
+    else {
       newItems.splice(index, 1);
       setItems(newItems);
     }
@@ -185,12 +198,12 @@ export default function ConsignmentItemForm({ mode, initialValues, onSubmit, onC
               </Button>
             </div>
 
-            {items.map((item, index) => (
+            {items.filter(p => p.isDeleted === false).map((item, index) => (
               <Card key={index}>
                 <CardHeader className="p-4">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-base">Item {index + 1}</CardTitle>
-                    {items.length > 1 && (
+                    {items.length >= 1 && (
                       <Button type="button" variant="ghost" size="sm" onClick={() => removeItem(index)}>
                         <Trash className="h-4 w-4" />
                         <span className="sr-only">Remove item</span>
@@ -313,4 +326,4 @@ export default function ConsignmentItemForm({ mode, initialValues, onSubmit, onC
       </form>
     </Card>
   );
-} 
+}

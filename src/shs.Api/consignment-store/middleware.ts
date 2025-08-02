@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
   // Get the cookie
-  console.log('teste');
+  
   const isAuthenticated = request.cookies.has('.AspNetCore.Identity.Application') // replace 'auth' with your actual cookie name
 
   // Define public paths that don't require authentication

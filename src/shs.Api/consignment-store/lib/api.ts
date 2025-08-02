@@ -166,6 +166,32 @@ export const consignments = {
   }): Promise<void> => {
     await api.post('/api/consignments', data);
   },
+  updateConsignment: async (id: number, data: {
+    supplierId: number;
+    consignmentDate: string;
+    items: Array<{
+      id: number;
+      name: string;
+      description?: string;
+      price: number;
+      size?: string;
+      brandId?: number;
+      tagIds?: number[];
+      color?: string;
+    }>;
+    newItems: Array<{
+      name: string;
+      description?: string;
+      price: number;
+      size?: string;
+      brandId?: number;
+      tagIds?: number[];
+      color?: string;
+    }>;
+    deletedItemsIds: number[];
+  }): Promise<void> => {
+    await api.put(`/api/consignments/${id}`, data);
+  },
   getPaginatedConsignments: async (skip = 0, take = 10): Promise<PagedModel<ConsignmentSearchResult>> => {
     const response = await api.get(`/api/consignments?Skip=${skip}&Take=${take}`);
     return response.data;

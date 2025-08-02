@@ -15,6 +15,7 @@ export default function EditConsignmentPage({ params }: { params: Promise<{ id: 
   const [initialValues, setInitialValues] = useState<{
     supplierId: string;
     items: Array<{
+      id: number;
       name: string;
       description: string;
       price: string;
@@ -23,6 +24,7 @@ export default function EditConsignmentPage({ params }: { params: Promise<{ id: 
       tags: string[];
       size: string;
       receiveDate: string;
+      isDeleted: boolean;
     }>;
   } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -34,6 +36,7 @@ export default function EditConsignmentPage({ params }: { params: Promise<{ id: 
         setInitialValues({
           supplierId: consignment.supplierId.toString(),
           items: consignment.items.map(item => ({
+            id: item.id,
             name: item.name,
             description: item.description || "",
             price: item.evaluatedValue.toString(),
@@ -41,7 +44,8 @@ export default function EditConsignmentPage({ params }: { params: Promise<{ id: 
             brandId: item.brandId?.toString() || "",
             tags: item.tagIds?.map(id => id.toString()) || [],
             size: item.size,
-            receiveDate: new Date().toISOString().split('T')[0] // Default to today since we don't have this in the API
+            receiveDate: new Date().toISOString().split('T')[0], // Default to today since we don't have this in the API
+            isDeleted: false // Add the missing isDeleted property
           }))
         })
       } catch (error) {
@@ -68,8 +72,22 @@ export default function EditConsignmentPage({ params }: { params: Promise<{ id: 
     }>;
   }) => {
     try {
-      // TODO: Implement update API call when available
-      // await consignments.updateConsignment(parseInt(unwrappedParams.id), data)
+      const existingItems = initialValues?.items.filter(item => !item.isDeleted) || [];
+      await consignments.updateConsignment(parseInt(unwrappedParams.id), {
+        ...data,
+        items: existingItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          description: item.description || "",
+          price: parseFloat(item.price),
+          color: item.color,
+          brandId: parseInt(item.brandId),
+          tagIds: item.tags.map(tag => parseInt(tag)),
+          size: item.size
+        })),
+        newItems: data.items,
+        deletedItemsIds: initialValues?.items.filter(item => item.isDeleted).map(item => item.id) || []
+      })
       router.push("/consignments")
     } catch (error) {
       console.error("Error updating consignment:", error)
