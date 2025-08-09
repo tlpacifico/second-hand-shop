@@ -4,22 +4,19 @@ using System.Net.Http.Json;
 
 namespace shs.Api.Tests;
 
-public class ApiCookieHandler : DelegatingHandler
+public class ApiCookieHandler(ApiWebApplicationFactory factory) : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        var client = new HttpClient()
-        {
-            BaseAddress = new Uri(TestConstants.BaseUrl)
-        };
+        var client = factory.CreateClient();
         var userData = new
         {
             email = TestConstants.TestUserId,
-            password = "Password12!",
+            password = TestConstants.TestUserPassword
         };
-        var result = await client.PostAsJsonAsync("login?useCookies=true", userData, CancellationToken.None);
+        //var result = await client.PostAsJsonAsync("login?useCookies=true", userData, CancellationToken.None);
 
         var loginResponse = await client.PostAsJsonAsync("login?useCookies=true", userData, cancellationToken);
         
@@ -27,14 +24,13 @@ public class ApiCookieHandler : DelegatingHandler
         loginResponse.EnsureSuccessStatusCode();
         
         // Extract cookies from the response and add them to the outgoing request
-        if (loginResponse.Headers.TryGetValues(".AspNetCore.Identity.Application", out var cookies))
+        if (loginResponse.Headers.TryGetValues("set-cookie", out var cookies))
         {
             foreach (var cookie in cookies)
             {
-                request.Headers.Add(".AspNetCore.Identity.Application", cookie);
+                request.Headers.Add("Cookie", cookie);
             }
         }
-
         return await base.SendAsync(request, cancellationToken);
     }
 }

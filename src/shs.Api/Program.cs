@@ -43,9 +43,6 @@ builder.Services.AddIdentityCore<UserEntity>(options =>
     .AddApiEndpoints();
 
 
-
-
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
@@ -63,7 +60,6 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    
 }
 
 
@@ -87,4 +83,4 @@ app.MapStoreEndpoints();
 
 app.Run();
 
-public partial class Program { }
+public interface  IMarkerProgram { }

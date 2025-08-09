@@ -9,15 +9,15 @@ using shs.Domain;
 
 namespace shs.Api.Tests.Endpoints;
 
-public class ConsignmentEndpointsTests : IClassFixture<ApiWebApplicationFactory<Program>>
+public class ConsignmentEndpointsTests : IClassFixture<ApiWebApplicationFactory>
 {
-    private readonly ApiWebApplicationFactory<Program> _factory;
+    private readonly ApiWebApplicationFactory _factory;
     private readonly HttpClient _client;
 
-    public ConsignmentEndpointsTests(ApiWebApplicationFactory<Program> factory)
+    public ConsignmentEndpointsTests(ApiWebApplicationFactory factory)
     {
         _factory = factory;
-        _client = _factory.CreateDefaultClient(new ApiCookieHandler());
+        _client = _factory.CreateDefaultClient(new ApiCookieHandler(_factory));
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class ConsignmentEndpointsTests : IClassFixture<ApiWebApplicationFactory<
 
         // Act
         var response = await _client.PostAsJsonAsync(
-            $"{ApiConstants.ConsignmentRoutes.Path}/{ApiConstants.ConsignmentRoutes.Create}", newConsignmentRequest,
+            $"{ApiConstants.ConsignmentRoutes.Path}", newConsignmentRequest,
             cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert

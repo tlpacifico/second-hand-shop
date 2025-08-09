@@ -6,7 +6,7 @@ using shs.Domain.Infrastructure;
 
 namespace shs.Application.Consignment.Commands.CreateConsignment;
 
-internal class CreateConsignmentCommandHandler(
+public class CreateConsignmentCommandHandler(
     IConsignmentRepository repository)
     : ICommandHandler<CreateConsignmentCommand, ConsignmentDetailResponse>
 {

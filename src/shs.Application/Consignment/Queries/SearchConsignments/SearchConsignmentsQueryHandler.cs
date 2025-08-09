@@ -6,7 +6,7 @@ using shs.Domain.Presentation.Models;
 
 namespace shs.Application.Consignment.Queries.SearchConsignments;
 
-internal class SearchConsignmentsQueryHandler(
+public class SearchConsignmentsQueryHandler(
     IConsignmentRepository repository)
     : IQueryHandler<SearchConsignmentsQuery, PageWithTotal<ConsignmentSearchResult>>
 {
