@@ -5,6 +5,7 @@ using shs.Api.Infrastructure.Database;
 using shs.Api.Presentation.Endpoints;
 using shs.Api.Presentation.Endpoints.Consignment;
 using shs.Api.Presentation.Endpoints.Store;
+using shs.Api.Presentation.Endpoints.Suppliers;
 using shs.Application;
 using shs.Database;
 using shs.Database.Database;
@@ -78,6 +79,7 @@ app.MapIdentityApi<UserEntity>();
 app.MapScalarUi();
 
 app.MapConsignmentsEndpoints();
+app.MapSuppliersEndpoints();
 app.MapUserEndpoints();
 app.MapStoreEndpoints();
 

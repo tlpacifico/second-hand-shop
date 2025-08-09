@@ -1,4 +1,5 @@
 ﻿using shs.Api.Domain.Enums;
+using shs.Application.Consignment.Models;
 
 namespace shs.Api.Presentation.Endpoints.Consignment.Models;
 

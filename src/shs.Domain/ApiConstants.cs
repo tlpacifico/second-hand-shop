@@ -14,15 +14,24 @@ public static class ApiConstants
         // Query endpoints
         public const string Search = "";
         public const string GetById = "{id:long}";
-        public const string SearchSuppliers = "owners";
-        public const string GetSupplierById = $"{SearchSuppliers}/{{id:long}}";
-        public const string GetAllSuppliers = $"{SearchSuppliers}/all";
         
         // Command endpoints
         public const string Create = "/";
         public const string Update = GetById;
-        public const string CreateSupplier = SearchSuppliers;
-        public const string UpdateSupplier = GetSupplierById;
-        public const string DeleteSupplier = GetSupplierById;
+    }
+    
+    public static class SupplierRoutes
+    {
+        public const string Path = $"{Routes.Base}/suppliers";
+        
+        // Query endpoints
+        public const string Search = "";
+        public const string GetById = "{id:long}";
+        public const string GetAll = "all";
+        
+        // Command endpoints
+        public const string Create = "/";
+        public const string Update = GetById;
+        public const string Delete = GetById;
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace shs.Api.Presentation.Endpoints.Consignment.Models;
+﻿namespace shs.Api.Presentation.Endpoints.Suppliers;
 
 public record CreateConsignmentSupplierRequest
 {

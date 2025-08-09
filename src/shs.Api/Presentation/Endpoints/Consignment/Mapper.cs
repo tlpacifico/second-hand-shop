@@ -1,6 +1,7 @@
 ﻿using shs.Api.Domain.Entities;
 using shs.Api.Domain.Enums;
 using shs.Api.Presentation.Endpoints.Consignment.Models;
+using shs.Api.Presentation.Endpoints.Suppliers;
 using shs.Domain.Application.Model;
 
 
