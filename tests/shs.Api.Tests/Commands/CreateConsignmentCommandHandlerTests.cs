@@ -25,20 +25,7 @@ public class CreateConsignmentCommandHandlerTests
         // Arrange
         var command = new CreateConsignmentCommand(
             SupplierId: 1,
-            ConsignmentDate: DateTime.UtcNow,
-            Items: new List<CreateConsignmentItemCommand>
-            {
-                new CreateConsignmentItemCommand(
-                    Name: "Test Item",
-                    Description: "Test Description",
-                    EvaluatedValue: 100.00m,
-                    Size: "M",
-                    BrandId: 1,
-                    Color: "Red",
-                    TagIds: new List<long> { 1, 2 }
-                )
-            }
-        );
+            ConsignmentDate: DateTime.UtcNow);
 
         var supplier = new ConsignmentSupplierEntity
         {
@@ -121,9 +108,7 @@ public class CreateConsignmentCommandHandlerTests
         // Arrange
         var command = new CreateConsignmentCommand(
             SupplierId: 999,
-            ConsignmentDate: DateTime.UtcNow,
-            Items: new List<CreateConsignmentItemCommand>()
-        );
+            ConsignmentDate: DateTime.UtcNow);
 
         _mockRepository.Setup(r => r.GetSupplierByIdAsync(999, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ArgumentException("Supplier not found"));

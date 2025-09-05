@@ -278,6 +278,12 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       }
@@ -310,6 +316,12 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       },
@@ -350,6 +362,12 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       }
@@ -389,6 +407,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       },
@@ -407,13 +431,26 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsignmentDetailResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       }
     },
-    "/api/consignments/{id:long}": {
+    "/api/consignments/{id}": {
       "get": {
         "tags": [
           "shs.Api"
@@ -421,7 +458,7 @@
         "parameters": [
           {
             "name": "id",
-            "in": "query",
+            "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
@@ -442,11 +479,196 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "shs.Api"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateConsignmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       }
     },
-    "/api/consignments/owners": {
+    "/api/consignments/{consignmentId}/items": {
+      "post": {
+        "tags": [
+          "shs.Api"
+        ],
+        "parameters": [
+          {
+            "name": "consignmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddConsignmentItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsignmentItemResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
+          }
+        }
+      }
+    },
+    "/api/consignments/{consignmentId}/items/{itemId}": {
+      "put": {
+        "tags": [
+          "shs.Api"
+        ],
+        "parameters": [
+          {
+            "name": "consignmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateConsignmentItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "shs.Api"
+        ],
+        "parameters": [
+          {
+            "name": "consignmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
+          }
+        }
+      }
+    },
+    "/api/suppliers": {
       "get": {
         "tags": [
           "shs.Api"
@@ -481,6 +703,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       },
@@ -500,12 +728,25 @@
         },
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsignmentSupplierResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       }
     },
-    "/api/consignments/owners/{id}": {
+    "/api/suppliers/{id}": {
       "get": {
         "tags": [
           "shs.Api"
@@ -534,6 +775,12 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       },
@@ -563,8 +810,17 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       },
@@ -584,13 +840,19 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       }
     },
-    "/api/consignments/owners/all": {
+    "/api/suppliers/all": {
       "get": {
         "tags": [
           "shs.Api"
@@ -608,6 +870,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       }
@@ -620,6 +888,12 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       }
@@ -642,6 +916,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       }
@@ -664,6 +944,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication cookie"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
           }
         }
       }
@@ -692,6 +978,49 @@
           },
           "refreshToken": {
             "type": "string"
+          }
+        }
+      },
+      "AddConsignmentItemRequest": {
+        "required": [
+          "name",
+          "description",
+          "price",
+          "size",
+          "brandId",
+          "color",
+          "tagIds"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "size": {
+            "type": "string"
+          },
+          "brandId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "color": {
+            "type": "string",
+            "nullable": true
+          },
+          "tagIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         }
       },
@@ -735,23 +1064,22 @@
         }
       },
       "ConsignmentItemResponse": {
-        "required": [
-          "identificationNumber",
-          "size",
-          "name",
-          "evaluatedValue"
-        ],
         "type": "object",
         "properties": {
           "id": {
             "type": "integer",
             "format": "int64"
           },
+          "name": {
+            "type": "string"
+          },
           "identificationNumber": {
             "type": "string"
           },
-          "status": {
-            "$ref": "#/components/schemas/ConsignmentStatusType"
+          "status": { },
+          "evaluatedValue": {
+            "type": "number",
+            "format": "double"
           },
           "size": {
             "type": "string"
@@ -760,20 +1088,13 @@
             "type": "integer",
             "format": "int64"
           },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
           "color": {
             "type": "string",
             "nullable": true
           },
-          "evaluatedValue": {
-            "type": "number",
-            "format": "double"
+          "description": {
+            "type": "string",
+            "nullable": true
           },
           "tagIds": {
             "type": "array",
@@ -806,9 +1127,6 @@
             "format": "int64"
           }
         }
-      },
-      "ConsignmentStatusType": {
-        "type": "integer"
       },
       "ConsignmentSupplierEntity": {
         "required": [
@@ -878,12 +1196,6 @@
         }
       },
       "ConsignmentSupplierResponse": {
-        "required": [
-          "name",
-          "email",
-          "phoneNumber",
-          "initials"
-        ],
         "type": "object",
         "properties": {
           "id": {
@@ -900,8 +1212,7 @@
             "type": "string"
           },
           "address": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "initials": {
             "type": "string"
@@ -959,8 +1270,7 @@
       "CreateConsignmentRequest": {
         "required": [
           "supplierId",
-          "consignmentDate",
-          "items"
+          "consignmentDate"
         ],
         "type": "object",
         "properties": {
@@ -971,12 +1281,6 @@
           "consignmentDate": {
             "type": "string",
             "format": "date-time"
-          },
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CreateConsignmentItem"
-            }
           }
         }
       },
@@ -1298,9 +1602,149 @@
             "type": "boolean"
           }
         }
+      },
+      "UpdateConsignmentItem": {
+        "required": [
+          "id",
+          "name",
+          "description",
+          "price",
+          "size"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "size": {
+            "type": "string"
+          },
+          "brandId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "tagIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "color": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateConsignmentItemRequest": {
+        "required": [
+          "name",
+          "description",
+          "price",
+          "size",
+          "brandId",
+          "color",
+          "tagIds"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "size": {
+            "type": "string"
+          },
+          "brandId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "color": {
+            "type": "string",
+            "nullable": true
+          },
+          "tagIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        }
+      },
+      "UpdateConsignmentRequest": {
+        "required": [
+          "supplierId",
+          "consignmentDate",
+          "items",
+          "newItems",
+          "deletedItemsIds"
+        ],
+        "type": "object",
+        "properties": {
+          "supplierId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "consignmentDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UpdateConsignmentItem"
+            }
+          },
+          "newItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateConsignmentItem"
+            }
+          },
+          "deletedItemsIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "description": "Cookie-based authentication using session cookies",
+        "name": ".AspNetCore.Identity.Application",
+        "in": "cookie"
       }
     }
   },
+  "security": [
+    {
+      "cookieAuth": [ ]
+    }
+  ],
   "tags": [
     {
       "name": "shs.Api"

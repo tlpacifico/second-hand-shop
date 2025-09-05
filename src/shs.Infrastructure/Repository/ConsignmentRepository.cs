@@ -93,4 +93,22 @@ public class ConsignmentRepository(ShsDbContext dbContext) : IConsignmentReposit
         dbContext.Consignments.Update(consignment);
         await dbContext.SaveChangesAsync(ct);
     }
+
+    public async Task<int> GetLastSequenceNumberForMonthAsync(long supplierId, string yearMonth, CancellationToken ct)
+    {
+        var query = from c in dbContext.Consignments
+            join i in dbContext.ConsignmentItems on c.Id equals i.ConsignmentId
+            where c.SupplierId == supplierId && i.IdentificationNumber.Contains(yearMonth)
+            orderby i.IdentificationNumber descending
+            select i.IdentificationNumber;
+
+        var lastIdentification = await query.AsNoTracking().FirstOrDefaultAsync(ct);
+        
+        if (string.IsNullOrEmpty(lastIdentification))
+            return 0;
+            
+        // Extract sequence number from identification (last 4 digits)
+        var sequencePart = lastIdentification.Substring(lastIdentification.Length - 4);
+        return int.TryParse(sequencePart, out var sequence) ? sequence : 0;
+    }
 }

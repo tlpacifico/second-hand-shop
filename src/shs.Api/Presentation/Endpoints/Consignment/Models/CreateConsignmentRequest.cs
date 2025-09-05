@@ -2,5 +2,4 @@
 
 public record CreateConsignmentRequest(
     long SupplierId,
-    DateTime ConsignmentDate,
-    IReadOnlyCollection<CreateConsignmentItem> Items);
+    DateTime ConsignmentDate);

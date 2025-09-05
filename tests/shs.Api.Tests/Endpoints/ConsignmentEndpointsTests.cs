@@ -24,24 +24,7 @@ public class ConsignmentEndpointsTests : IClassFixture<ApiWebApplicationFactory>
     public async Task CreateConsignment_ReturnsCreated_WithNewConsignment()
     {
         var newConsignmentRequest = new CreateConsignmentRequest(TestConstants.TestSupplierId,
-            DateTime.UtcNow,
-            new List<CreateConsignmentItem>()
-            {
-                new CreateConsignmentItem("Item 1", "Description 1", 100)
-                {
-                    Size = "M",
-                    BrandId = TestConstants.Brand.Id1,
-                    Color = "Red",
-                    TagIds = TestConstants.TagIds
-                },
-                new CreateConsignmentItem("Item 2", "Description 2", 200)
-                {
-                    Size = "L",
-                    BrandId = TestConstants.Brand.Id1,
-                    Color = "Blue",
-                    TagIds = TestConstants.TagIds
-                }
-            });
+            DateTime.UtcNow);
 
         // Act
         var response = await _client.PostAsJsonAsync(

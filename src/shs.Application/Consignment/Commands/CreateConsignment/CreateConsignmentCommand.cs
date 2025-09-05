@@ -5,8 +5,7 @@ namespace shs.Application.Consignment.Commands.CreateConsignment;
 
 public record CreateConsignmentCommand(
     long SupplierId,
-    DateTime ConsignmentDate,
-    IReadOnlyCollection<CreateConsignmentItemCommand> Items) : ICommand<ConsignmentDetailResponse>;
+    DateTime ConsignmentDate) : ICommand<ConsignmentDetailResponse>;
 
 public record CreateConsignmentItemCommand(
     string Name,

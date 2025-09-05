@@ -18,6 +18,9 @@ public static class ApiConstants
         // Command endpoints
         public const string Create = "/";
         public const string Update = GetById;
+        public const string AddNewItem = "{consignmentId:long}/items";
+        public const string UpdateItem = "{consignmentId:long}/items/{itemId:long}";
+        public const string DeleteItem = "{consignmentId:long}/items/{itemId:long}";
     }
     
     public static class SupplierRoutes

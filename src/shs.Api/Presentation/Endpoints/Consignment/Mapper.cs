@@ -29,17 +29,7 @@ public static class Mapper
         return new CreateConsignment()
         {
             SupplierId = consignment.SupplierId,
-            ConsignmentDate = consignment.ConsignmentDate,
-            Items = consignment.Items.Select(i => new shs.Domain.Application.Model.CreateConsignmentItem
-            {
-                Size = i.Size,
-                BrandId = i.BrandId,
-                Name = i.Name,
-                Description = i.Description,
-                EvaluatedValue = i.Price,
-                Tags = i.TagIds,
-                Color = i.Color
-            }).ToList()
+            ConsignmentDate = consignment.ConsignmentDate
         };
     }
     

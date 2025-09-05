@@ -25,4 +25,5 @@ public interface IConsignmentRepository
     Task<PageWithTotal<ConsignmentEntity>> SearchAsync(int pageSkip, int pageTake, CancellationToken ct);
     Task<ConsignmentEntity> GetByIdAsync(long modelId, CancellationToken ct);
     Task UpdateAsync(ConsignmentEntity consignment, CancellationToken ct);
+    Task<int> GetLastSequenceNumberForMonthAsync(long supplierId, string yearMonth, CancellationToken ct);
 }
