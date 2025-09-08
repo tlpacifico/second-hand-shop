@@ -1,118 +1,148 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OpenApi;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using shs.Api;
 using shs.Api.Domain.Entities;
-using shs.Api.Infrastructure.Database;
 using shs.Api.Presentation.Endpoints;
-using shs.Api.Presentation.Endpoints.Auth;
 using shs.Api.Presentation.Endpoints.Consignment;
 using shs.Api.Presentation.Endpoints.Store;
 using shs.Api.Presentation.Endpoints.Suppliers;
 using shs.Application;
-using shs.Database;
 using shs.Database.Database;
 using shs.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi("v1", op =>
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+try
 {
-    op.AddDocumentTransformer<BearerAuthDocumentTransformer>();
-    op.AddOperationTransformer<BearerAuthOperationTransformer>();
-});
-builder.Services.AddDatabaseInfrastructure(builder.Configuration);
-builder.Services.AddApplication();
-builder.Services.AddHttpContextAccessor();
+    Log.Information("Starting Second Hand Shop API application");
 
+    // Add Serilog to the logging pipeline
+    builder.Host.UseSerilog();
 
-builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
-    .AddCookie(IdentityConstants.ApplicationScheme, options =>
+    // Add services to the container.
+    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+    Log.Information("Configuring services...");
+    Log.Information("Adding OpenAPI services...");
+    builder.Services.AddOpenApi("v1", op =>
     {
-        
-        options.Cookie.Domain = ".secondhandstore.local";
-        options.Cookie.Name = ".AspNetCore.Identity.Application";
-        options.Events.OnRedirectToLogin = context =>
+        op.AddDocumentTransformer<JwtAuthDocumentTransformer>();
+        op.AddOperationTransformer<JwtAuthOperationTransformer>();
+    });
+    
+    Log.Information("Adding database infrastructure...");
+    builder.Services.AddDatabaseInfrastructure(builder.Configuration);
+    
+    Log.Information("Adding application services...");
+    builder.Services.AddApplication();
+    builder.Services.AddHttpContextAccessor();
+
+
+    Log.Information("Configuring Firebase JWT authentication...");
+    var firebaseConfig = builder.Configuration.GetSection("Firebase");
+    var projectId = firebaseConfig["ProjectId"];
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
         {
-            context.Response.StatusCode = 401;
-            return Task.CompletedTask;
-        };
-        
+            options.Authority = $"https://securetoken.google.com/{projectId}";
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = $"https://securetoken.google.com/{projectId}",
+                ValidateAudience = true,
+                ValidAudience = projectId,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+        });
+
+    Log.Information("Adding authorization services...");
+    builder.Services.AddAuthorization();
+
+
+    Log.Information("Configuring CORS...");
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowSpecificOrigin",
+            n =>
+                n.WithOrigins("https://app.secondhandstore.local", "http://app.secondhandstore.local", "http://localhost:4200", "https://localhost:4200")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+        );
     });
 
-builder.Services.AddAuthorization();
+    Log.Information("Building application...");
+    var app = builder.Build();
 
-builder.Services.AddIdentityCore<UserEntity>(options =>
+    // Configure the HTTP request pipeline.
+    Log.Information("Configuring HTTP request pipeline...");
+    
+    if (app.Environment.IsDevelopment())
     {
-        options.SignIn.RequireConfirmedAccount = true;
-    })
-    .AddEntityFrameworkStores<ShsDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
+        Log.Information("Development environment detected - mapping OpenAPI endpoints");
+        app.MapOpenApi();
+    }
 
+    Log.Information("Applying middleware...");
+    app.UseHttpsRedirection();
+    app.UseAuthentication();
+    app.UseAuthorization();
 
-builder.Services.AddCors(options =>
+    Log.Information("Applying database migrations...");
+    using var scope = app.Services.CreateScope();
+    await scope.ApplyMigrations();
+
+    Log.Information("Configuring CORS and mapping endpoints...");
+    app.UseCors("AllowSpecificOrigin");
+    app.MapScalarUi();
+
+    Log.Information("Mapping API endpoints...");
+    app.MapConsignmentsEndpoints();
+    app.MapSuppliersEndpoints();
+    app.MapUserEndpoints();
+    app.MapStoreEndpoints();
+
+    Log.Information("Application startup completed successfully");
+    Log.Information("Starting web server...");
+    
+    app.Run();
+}
+catch (Exception ex)
 {
-    options.AddPolicy("AllowSpecificOrigin",
-        n => 
-            n.WithOrigins("https://app.secondhandstore.local", "http://app.secondhandstore.local")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-        );
-});
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
 {
-    app.MapOpenApi();
+    Log.CloseAndFlush();
 }
 
-
-app.UseHttpsRedirection();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-
-using var scope = app.Services.CreateScope();
-await scope.ApplyMigrations();
-
-
-app.UseCors("AllowSpecificOrigin");
-app.MapIdentityApi<UserEntity>();
-app.MapScalarUi();
-
-app.MapConsignmentsEndpoints();
-app.MapSuppliersEndpoints();
-app.MapUserEndpoints();
-app.MapStoreEndpoints();
-
-app.Run();
-
-public interface  IMarkerProgram { }
-
-public class BearerAuthDocumentTransformer : IOpenApiDocumentTransformer
+public interface IMarkerProgram
 {
-    public Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
+}
+
+public class JwtAuthDocumentTransformer : IOpenApiDocumentTransformer
+{
+    public Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context,
+        CancellationToken cancellationToken)
     {
         // Add security scheme definition
         document.Components ??= new OpenApiComponents();
         document.Components.SecuritySchemes ??= new Dictionary<string, OpenApiSecurityScheme>();
-        
-        document.Components.SecuritySchemes.Add("bearerAuth", new OpenApiSecurityScheme
+
+        document.Components.SecuritySchemes.Add("Bearer", new OpenApiSecurityScheme
         {
             Type = SecuritySchemeType.Http,
             Scheme = "bearer",
             BearerFormat = "JWT",
-            Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below."
+            Description = "Firebase JWT token for authentication"
         });
 
         // Add global security requirement
@@ -125,7 +155,7 @@ public class BearerAuthDocumentTransformer : IOpenApiDocumentTransformer
                     Reference = new OpenApiReference
                     {
                         Type = ReferenceType.SecurityScheme,
-                        Id = "bearerAuth",
+                        Id = "Bearer",
                     }
                 },
                 Array.Empty<string>()
@@ -137,16 +167,17 @@ public class BearerAuthDocumentTransformer : IOpenApiDocumentTransformer
 }
 
 // Operation Transformer for handling per-endpoint security
-public class BearerAuthOperationTransformer : IOpenApiOperationTransformer
+public class JwtAuthOperationTransformer : IOpenApiOperationTransformer
 {
-    public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
+    public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context,
+        CancellationToken cancellationToken)
     {
         // Get endpoint metadata
         var endpoint = context.Description.ActionDescriptor.EndpointMetadata;
-        
+
         // Check for AllowAnonymous attribute
         var allowAnonymous = endpoint.OfType<AllowAnonymousAttribute>().Any();
-        
+
         // Check for Authorize attribute
         var requiresAuth = endpoint.OfType<AuthorizeAttribute>().Any();
 
@@ -159,15 +190,15 @@ public class BearerAuthOperationTransformer : IOpenApiOperationTransformer
         {
             // Add authentication responses
             operation.Responses ??= new OpenApiResponses();
-            
+
             if (!operation.Responses.ContainsKey("401"))
             {
                 operation.Responses.Add("401", new OpenApiResponse
                 {
-                    Description = "Unauthorized - Invalid or missing Bearer token"
+                    Description = "Unauthorized - Invalid or missing JWT token"
                 });
             }
-            
+
             if (!operation.Responses.ContainsKey("403"))
             {
                 operation.Responses.Add("403", new OpenApiResponse

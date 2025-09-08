@@ -1,0 +1,106 @@
+<div class="w-full bg-white p-4">
+    <p-confirmdialog />
+    <p-toast />
+
+    <div class="w-full overflow-x-auto">
+        <p-table #dt [value]="data" [lazy]="true" (onLazyLoad)="loadData($event)" [paginator]="true" [rows]="10"
+            dataKey="id" [totalRecords]="totalRecords" [first]="0" [loading]="false" stateStorage="local"
+            stateKey="suppliers-search-state-local">
+            <ng-template pTemplate="caption">
+                <div
+                    class="flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center gap-3">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-gray-900">
+                            Suppliers
+                        </h2>
+                        <p class="text-muted-foreground">Manage your consignment item suppliers.</p>
+                    </div>
+                    <div class="flex gap-3 align-items-center ml-auto">
+                        <button pButton pRipple label="Add Supplier" icon="pi pi-plus" class="p-button"
+                            [routerLink]="['new']"></button>
+                    </div>
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="name" class="w-48 min-w-max">
+                        <div class="flex align-items-center">
+                            Name
+                            <p-sortIcon field="name" class="ml-2"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pSortableColumn="email" class="w-64 min-w-max">
+                        <div class="flex align-items-center">
+                            Email
+                            <p-sortIcon field="email" class="ml-2"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pSortableColumn="phoneNumber" class="w-40 min-w-max">
+                        <div class="flex align-items-center">
+                            Phone
+                            <p-sortIcon field="phoneNumber" class="ml-2"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pSortableColumn="initials" class="w-24 min-w-max">
+                        <div class="flex align-items-center">
+                            Initials
+                            <p-sortIcon field="initials" class="ml-2"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pSortableColumn="address" class="w-64 min-w-max">
+                        <div class="flex align-items-center">
+                            Address
+                            <p-sortIcon field="address" class="ml-2"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th class="text-center w-20"></th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-supplier>
+                <tr>
+                    <td class="max-w-48">
+                        <span class="font-medium truncate block">{{ supplier.name }}</span>
+                    </td>
+                    <td class="max-w-64">
+                        <span class="truncate block">{{ supplier.email }}</span>
+                    </td>
+                    <td class="max-w-40">
+                        <span class="truncate block">{{ supplier.phoneNumber }}</span>
+                    </td>
+                    <td class="max-w-24">
+                        <span class="truncate block">{{ supplier.initials }}</span>
+                    </td>
+                    <td class="max-w-64">
+                        <span class="truncate block">{{ supplier.address || 'N/A' }}</span>
+                    </td>
+                    <td>
+                        <div class="flex-none w-max">
+                            <button pButton icon="pi pi-pencil"
+                                class="bg-white border-transparent text-black surface-200 ml-1"
+                                [routerLink]="[supplier.id, 'edit']"></button>
+                            <button pButton severity="danger" icon="pi pi-trash"
+                                class="bg-white border-transparent text-black surface-200 ml-1"
+                                (click)="confirmDeleteSupplier(supplier)"></button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6" class="text-center py-6">
+                        <div class="flex flex-column items-center gap-3">
+                            <i class="pi pi-info-circle text-4xl text-400"></i>
+                            <span class="text-600 text-lg">
+                                No suppliers found
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

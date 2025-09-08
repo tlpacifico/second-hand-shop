@@ -1,0 +1,217 @@
+<p-toast />
+
+<div class="w-full bg-white p-4">
+    <p-card>
+
+
+        <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6 py-3 px-4">
+            <h2 class="text-2xl font-semibold text-gray-900">Edit Supplier</h2>
+
+            <!-- Basic Information -->
+            <div class="flex flex-wrap gap-6">
+                <div class="flex flex-col grow basis-0 gap-2">
+                    <label htmlFor="name">*Name</label>
+                    <input
+                        pInputText
+                        id="name"
+                        formControlName="name"
+                        name="name"
+                        type="text"
+                        placeholder="Enter supplier name"
+                        [ngClass]="{'p-invalid': isFieldInvalid('name')}"
+                        [disabled]="isLoading" />
+                    <ng-container *ngIf="supplierForm.get('name') as name">
+                        <div *ngIf="name.invalid && name.errors && name.touched">
+                            <div class="p-error" *ngIf="name.hasError('required')">
+                                Name is required
+                            </div>
+                            <div class="p-error" *ngIf="name.hasError('minlength')">
+                                Name must be at least {{ name.errors['minlength'].requiredLength }} characters
+                            </div>
+                            <div class="p-error" *ngIf="name.hasError('maxlength')">
+                                Name must not exceed {{ name.errors['maxlength'].requiredLength }} characters
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+
+                <div class="flex flex-col grow basis-0 gap-2">
+                    <label htmlFor="initial">*Initials</label>
+                    <input
+                        pInputText
+                        id="initial"
+                        formControlName="initial"
+                        name="initial"
+                        type="text"
+                        placeholder="Enter initials"
+                        [ngClass]="{'p-invalid': isFieldInvalid('initial')}"
+                        [disabled]="isLoading" />
+                    <ng-container *ngIf="supplierForm.get('initial') as initial">
+                        <div *ngIf="initial.invalid && initial.errors && initial.touched">
+                            <div class="p-error" *ngIf="initial.hasError('required')">
+                                Initials is required
+                            </div>
+                            <div class="p-error" *ngIf="initial.hasError('minlength')">
+                                Initials must be at least {{ initial.errors['minlength'].requiredLength }} characters
+                            </div>
+                            <div class="p-error" *ngIf="initial.hasError('maxlength')">
+                                Initials must not exceed {{ initial.errors['maxlength'].requiredLength }} characters
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="flex flex-wrap gap-6">
+                <div class="flex flex-col grow basis-0 gap-2">
+                    <label htmlFor="email">*Email</label>
+                    <input
+                        pInputText
+                        id="email"
+                        formControlName="email"
+                        name="email"
+                        type="email"
+                        placeholder="Enter email address"
+                        [ngClass]="{'p-invalid': isFieldInvalid('email')}"
+                        [disabled]="isLoading" />
+                    <ng-container *ngIf="supplierForm.get('email') as email">
+                        <div *ngIf="email.invalid && email.errors && email.touched">
+                            <div class="p-error" *ngIf="email.hasError('required')">
+                                Email is required
+                            </div>
+                            <div class="p-error" *ngIf="email.hasError('email')">
+                                Please enter a valid email address
+                            </div>
+                            <div class="p-error" *ngIf="email.hasError('maxlength')">
+                                Email must not exceed {{ email.errors['maxlength'].requiredLength }} characters
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+
+                <div class="flex flex-col grow basis-0 gap-2">
+                    <label htmlFor="phoneNumber">*Phone Number</label>
+                    <input
+                        pInputText
+                        id="phoneNumber"
+                        formControlName="phoneNumber"
+                        name="phoneNumber"
+                        type="text"
+                        placeholder="Enter phone number"
+                        [ngClass]="{'p-invalid': isFieldInvalid('phoneNumber')}"
+                        [disabled]="isLoading" />
+                    <ng-container *ngIf="supplierForm.get('phoneNumber') as phoneNumber">
+                        <div *ngIf="phoneNumber.invalid && phoneNumber.errors && phoneNumber.touched">
+                            <div class="p-error" *ngIf="phoneNumber.hasError('required')">
+                                Phone number is required
+                            </div>
+                            <div class="p-error" *ngIf="phoneNumber.hasError('pattern')">
+                                Please enter a valid phone number
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="flex flex-wrap gap-6">
+                <div class="flex flex-col grow basis-0 gap-2">
+                    <label htmlFor="address">Address</label>
+                    <input
+                        pInputText
+                        id="address"
+                        formControlName="address"
+                        name="address"
+                        type="text"
+                        placeholder="Enter address (optional)"
+                        [ngClass]="{'p-invalid': isFieldInvalid('address')}"
+                        [disabled]="isLoading" />
+                    <ng-container *ngIf="supplierForm.get('address') as address">
+                        <div *ngIf="address.invalid && address.errors && address.touched">
+                            <div class="p-error" *ngIf="address.hasError('maxlength')">
+                                Address must not exceed {{ address.errors['maxlength'].requiredLength }} characters
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- Commission Settings -->
+            <div class="flex flex-wrap gap-6">
+                <div class="flex flex-col grow basis-0 gap-2">
+                    <label htmlFor="commissionPercentageInCash">Commission % (Cash)</label>
+                    <p-inputNumber
+                        id="commissionPercentageInCash"
+                        formControlName="commissionPercentageInCash"
+                        name="commissionPercentageInCash"
+                        placeholder="0"
+                        [min]="0"
+                        [max]="100"
+                        [suffix]="'%'"
+                        [ngClass]="{'p-invalid': isFieldInvalid('commissionPercentageInCash')}"
+                        [disabled]="isLoading">
+                    </p-inputNumber>
+                    <ng-container *ngIf="supplierForm.get('commissionPercentageInCash') as commissionCash">
+                        <div *ngIf="commissionCash.invalid && commissionCash.errors && commissionCash.touched">
+                            <div class="p-error" *ngIf="commissionCash.hasError('min')">
+                                Value must be at least 0
+                            </div>
+                            <div class="p-error" *ngIf="commissionCash.hasError('max')">
+                                Value must not exceed 100
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+
+                <div class="flex flex-col grow basis-0 gap-2">
+                    <label htmlFor="commissionPercentageInProducts">Commission % (Products)</label>
+                    <p-inputNumber
+                        id="commissionPercentageInProducts"
+                        formControlName="commissionPercentageInProducts"
+                        name="commissionPercentageInProducts"
+                        placeholder="0"
+                        [min]="0"
+                        [max]="100"
+                        [suffix]="'%'"
+                        [ngClass]="{'p-invalid': isFieldInvalid('commissionPercentageInProducts')}"
+                        [disabled]="isLoading">
+                    </p-inputNumber>
+                    <ng-container *ngIf="supplierForm.get('commissionPercentageInProducts') as commissionProducts">
+                        <div *ngIf="commissionProducts.invalid && commissionProducts.errors && commissionProducts.touched">
+                            <div class="p-error" *ngIf="commissionProducts.hasError('min')">
+                                Value must be at least 0
+                            </div>
+                            <div class="p-error" *ngIf="commissionProducts.hasError('max')">
+                                Value must not exceed 100
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex w-full justify-end gap-3" styleClass="mb-4">
+                <button
+                    pButton
+                    pRipple
+                    type="button"
+                    label="Cancel"
+                    icon="pi pi-times"
+                    class="p-button-outlined"
+                    (click)="onCancel()"
+                    [disabled]="isLoading">
+                </button>
+                <button
+                    pButton
+                    pRipple
+                    type="submit"
+                    label="Update Supplier"
+                    icon="pi pi-check"
+                    [disabled]="supplierForm.invalid || isLoading"
+                    [loading]="isLoading">
+                </button>
+            </div>
+        </form>
+    </p-card>
+</div>
