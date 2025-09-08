@@ -1,4 +1,4 @@
-# Firebase config with sensitive data
+# Firebase config with sensitive data - DO NOT COMMIT
 src/environments/firebase.config.ts
 
 # Dependencies
