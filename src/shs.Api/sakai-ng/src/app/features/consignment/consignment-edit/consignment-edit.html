@@ -1,0 +1,317 @@
+<p-confirmdialog />
+<p-toast />
+
+<div class="w-full bg-white p-4">
+    <!-- Consignment Details Form -->
+    <p-card class="mb-4">
+        <form [formGroup]="consignmentForm" (ngSubmit)="onConsignmentSubmit()" class="flex flex-col gap-6 py-3 px-4">
+            <h2 class="text-2xl font-semibold text-gray-900">Edit Consignment</h2>
+
+            <!-- Consignment Information -->
+            <div class="flex flex-wrap gap-6">
+                <div class="flex flex-col grow basis-0 gap-2">
+                    <label htmlFor="supplierId">*Supplier ID</label>
+                    <input
+                        pInputText
+                        id="supplierId"
+                        formControlName="supplierId"
+                        type="number"
+                        placeholder="Supplier ID"
+                        [ngClass]="{'p-invalid': isFieldInvalid(consignmentForm, 'supplierId')}"
+                        [disabled]="isLoading" />
+                    <ng-container *ngIf="consignmentForm.get('supplierId') as supplierId">
+                        <div *ngIf="supplierId.invalid && supplierId.errors && supplierId.touched">
+                            <div class="p-error" *ngIf="supplierId.hasError('required')">
+                                Supplier ID is required
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+
+                <div class="flex flex-col grow basis-0 gap-2">
+                    <label htmlFor="consignmentDate">*Consignment Date</label>
+                    <input
+                        pInputText
+                        id="consignmentDate"
+                        formControlName="consignmentDate"
+                        type="date"
+                        [ngClass]="{'p-invalid': isFieldInvalid(consignmentForm, 'consignmentDate')}"
+                        [disabled]="isLoading" />
+                    <ng-container *ngIf="consignmentForm.get('consignmentDate') as consignmentDate">
+                        <div *ngIf="consignmentDate.invalid && consignmentDate.errors && consignmentDate.touched">
+                            <div class="p-error" *ngIf="consignmentDate.hasError('required')">
+                                Consignment date is required
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- Consignment Form Actions -->
+            <div class="flex w-full justify-end gap-3">
+                <button
+                    pButton
+                    pRipple
+                    type="button"
+                    label="Cancel"
+                    icon="pi pi-times"
+                    class="p-button-outlined"
+                    (click)="onCancel()"
+                    [disabled]="isLoading">
+                </button>
+                <button
+                    pButton
+                    pRipple
+                    type="submit"
+                    label="Update Consignment"
+                    icon="pi pi-check"
+                    [disabled]="consignmentForm.invalid || isLoading"
+                    [loading]="isLoading">
+                </button>
+            </div>
+        </form>
+    </p-card>
+
+    <!-- Items Management -->
+    <p-card>
+        <div class="flex flex-col gap-6 py-3 px-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-semibold text-gray-900">Consignment Items</h3>
+                <button
+                    pButton
+                    pRipple
+                    label="Add Item"
+                    icon="pi pi-plus"
+                    class="p-button"
+                    (click)="showAddItemForm()"
+                    [disabled]="isLoading">
+                </button>
+            </div>
+
+            <!-- Items Table -->
+            <div class="w-full overflow-x-auto">
+                <p-table [value]="items" dataKey="id" [loading]="loadingItems">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="w-48 min-w-max">Name</th>
+                            <th class="w-32 min-w-max">Price</th>
+                            <th class="w-24 min-w-max">Size</th>
+                            <th class="w-32 min-w-max">Brand</th>
+                            <th class="w-32 min-w-max">Color</th>
+                            <th class="w-48 min-w-max">Tags</th>
+                            <th class="text-center w-20">Actions</th>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-item>
+                        <tr>
+                            <td class="max-w-48">
+                                <span class="font-medium truncate block">{{ item.name }}</span>
+                                <span *ngIf="item.description" class="text-sm text-gray-500 truncate block">{{ item.description }}</span>
+                            </td>
+                            <td class="max-w-32">
+                                <span class="truncate block">${{ item.evaluatedValue | number:'1.2-2' }}</span>
+                            </td>
+                            <td class="max-w-24">
+                                <span class="truncate block">{{ item.size }}</span>
+                            </td>
+                            <td class="max-w-32">
+                                <span class="truncate block">{{ getBrandName(item.brandId) }}</span>
+                            </td>
+                            <td class="max-w-32">
+                                <span class="truncate block">{{ item.color || 'N/A' }}</span>
+                            </td>
+                            <td class="max-w-48">
+                                <span class="truncate block text-sm">{{ getTagNames(item.tagIds) }}</span>
+                            </td>
+                            <td>
+                                <div class="flex-none w-max">
+                                    <button pButton icon="pi pi-pencil"
+                                        class="bg-white border-transparent text-black surface-200 ml-1"
+                                        (click)="showEditItemForm(item)"></button>
+                                    <button pButton severity="danger" icon="pi pi-trash"
+                                        class="bg-white border-transparent text-black surface-200 ml-1"
+                                        (click)="confirmDeleteItem(item)"></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="7" class="text-center py-6">
+                                <div class="flex flex-column items-center gap-3">
+                                    <i class="pi pi-info-circle text-4xl text-400"></i>
+                                    <span class="text-600 text-lg">
+                                        No items found
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </p-card>
+
+    <!-- Item Form Modal -->
+    <div *ngIf="showItemForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                {{ editingItem ? 'Edit Item' : 'Add New Item' }}
+            </h3>
+
+            <form [formGroup]="itemForm" (ngSubmit)="onItemSubmit()" class="flex flex-col gap-4">
+                <!-- Item Name -->
+                <div class="flex flex-col gap-2">
+                    <label htmlFor="itemName">*Name</label>
+                    <input
+                        pInputText
+                        id="itemName"
+                        formControlName="name"
+                        placeholder="Enter item name"
+                        [ngClass]="{'p-invalid': isFieldInvalid(itemForm, 'name')}"
+                        [disabled]="loadingItems" />
+                    <ng-container *ngIf="itemForm.get('name') as name">
+                        <div *ngIf="name.invalid && name.errors && name.touched">
+                            <div class="p-error" *ngIf="name.hasError('required')">
+                                Name is required
+                            </div>
+                            <div class="p-error" *ngIf="name.hasError('minlength')">
+                                Name must be at least {{ name.errors['minlength'].requiredLength }} characters
+                            </div>
+                            <div class="p-error" *ngIf="name.hasError('maxlength')">
+                                Name must not exceed {{ name.errors['maxlength'].requiredLength }} characters
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+
+                <!-- Description -->
+                <div class="flex flex-col gap-2">
+                    <label htmlFor="itemDescription">Description</label>
+                    <textarea
+                        pInputText
+                        id="itemDescription"
+                        formControlName="description"
+                        placeholder="Enter item description (optional)"
+                        rows="3"
+                        [ngClass]="{'p-invalid': isFieldInvalid(itemForm, 'description')}"
+                        [disabled]="loadingItems"></textarea>
+                </div>
+
+                <!-- Price and Size -->
+                <div class="flex flex-wrap gap-4">
+                    <div class="flex flex-col grow basis-0 gap-2">
+                        <label htmlFor="itemPrice">*Price</label>
+                        <p-inputNumber
+                            id="itemPrice"
+                            formControlName="price"
+                            placeholder="0.00"
+                            [min]="0.01"
+                            [step]="0.01"
+                            [currency]="'USD'"
+                            [mode]="'currency'"
+                            [ngClass]="{'p-invalid': isFieldInvalid(itemForm, 'price')}"
+                            [disabled]="loadingItems">
+                        </p-inputNumber>
+                        <ng-container *ngIf="itemForm.get('price') as price">
+                            <div *ngIf="price.invalid && price.errors && price.touched">
+                                <div class="p-error" *ngIf="price.hasError('required')">
+                                    Price is required
+                                </div>
+                                <div class="p-error" *ngIf="price.hasError('min')">
+                                    Price must be greater than 0
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+
+                    <div class="flex flex-col grow basis-0 gap-2">
+                        <label htmlFor="itemSize">*Size</label>
+                        <input
+                            pInputText
+                            id="itemSize"
+                            formControlName="size"
+                            placeholder="Enter size"
+                            [ngClass]="{'p-invalid': isFieldInvalid(itemForm, 'size')}"
+                            [disabled]="loadingItems" />
+                        <ng-container *ngIf="itemForm.get('size') as size">
+                            <div *ngIf="size.invalid && size.errors && size.touched">
+                                <div class="p-error" *ngIf="size.hasError('required')">
+                                    Size is required
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+
+                <!-- Brand and Color -->
+                <div class="flex flex-wrap gap-4">
+                    <div class="flex flex-col grow basis-0 gap-2">
+                        <label htmlFor="itemBrand">Brand</label>
+                        <select
+                            id="itemBrand"
+                            formControlName="brandId"
+                            class="p-inputtext">
+                            <option value="">Select a brand (optional)</option>
+                            <option *ngFor="let brand of brands" [value]="brand.id">
+                                {{ brand.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col grow basis-0 gap-2">
+                        <label htmlFor="itemColor">Color</label>
+                        <input
+                            pInputText
+                            id="itemColor"
+                            formControlName="color"
+                            placeholder="Enter color (optional)"
+                            [disabled]="loadingItems" />
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                <div class="flex flex-col gap-2">
+                    <label>Tags</label>
+                    <div class="flex flex-wrap gap-2">
+                        <div *ngFor="let tag of tags" class="flex items-center">
+                            <input
+                                type="checkbox"
+                                [id]="'tag-' + tag.id"
+                                [value]="tag.id"
+                                [checked]="selectedTags.includes(tag.id)"
+                                (change)="onTagChange(tag.id, $event)"
+                                class="mr-2" />
+                            <label [for]="'tag-' + tag.id" class="text-sm">{{ tag.name }}</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item Form Actions -->
+                <div class="flex w-full justify-end gap-3 pt-4">
+                    <button
+                        pButton
+                        pRipple
+                        type="button"
+                        label="Cancel"
+                        icon="pi pi-times"
+                        class="p-button-outlined"
+                        (click)="hideItemForm()"
+                        [disabled]="loadingItems">
+                    </button>
+                    <button
+                        pButton
+                        pRipple
+                        type="submit"
+                        [label]="editingItem ? 'Update Item' : 'Add Item'"
+                        icon="pi pi-check"
+                        [disabled]="itemForm.invalid || loadingItems"
+                        [loading]="loadingItems">
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

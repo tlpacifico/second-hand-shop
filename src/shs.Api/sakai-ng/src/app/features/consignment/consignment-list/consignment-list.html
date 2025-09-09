@@ -1,0 +1,96 @@
+<div class="w-full bg-white p-4">
+    <p-confirmdialog />
+    <p-toast />
+
+    <div class="w-full overflow-x-auto">
+        <p-table #dt [value]="data" [lazy]="true" (onLazyLoad)="loadData($event)" [paginator]="true" [rows]="10"
+            dataKey="id" [totalRecords]="totalRecords" [first]="0" [loading]="false" stateStorage="local"
+            stateKey="consignments-search-state-local">
+            <ng-template pTemplate="caption">
+                <div
+                    class="flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center gap-3">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-gray-900">
+                            Consignments
+                        </h2>
+                        <p class="text-muted-foreground">Manage your consignment items and their details.</p>
+                    </div>
+                    <div class="flex gap-3 align-items-center ml-auto">
+                        <button pButton pRipple label="Add Consignment" icon="pi pi-plus" class="p-button"
+                            [routerLink]="['new']"></button>
+                    </div>
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="id" class="w-20 min-w-max">
+                        <div class="flex align-items-center">
+                            ID
+                            <p-sortIcon field="id" class="ml-2"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pSortableColumn="consignmentDate" class="w-32 min-w-max">
+                        <div class="flex align-items-center">
+                            Date
+                            <p-sortIcon field="consignmentDate" class="ml-2"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pSortableColumn="supplierName" class="w-48 min-w-max">
+                        <div class="flex align-items-center">
+                            Supplier
+                            <p-sortIcon field="supplierName" class="ml-2"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pSortableColumn="totalItems" class="w-24 min-w-max">
+                        <div class="flex align-items-center">
+                            Items
+                            <p-sortIcon field="totalItems" class="ml-2"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th class="text-center w-20"></th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-consignment>
+                <tr>
+                    <td class="max-w-20">
+                        <span class="font-medium truncate block">{{ consignment.id }}</span>
+                    </td>
+                    <td class="max-w-32">
+                        <span class="truncate block">{{ formatDate(consignment.consignmentDate) }}</span>
+                    </td>
+                    <td class="max-w-48">
+                        <span class="truncate block">{{ consignment.supplierName }}</span>
+                    </td>
+                    <td class="max-w-24">
+                        <span class="truncate block">{{ consignment.totalItems }}</span>
+                    </td>
+                    <td>
+                        <div class="flex-none w-max">
+                            <button pButton icon="pi pi-pencil"
+                                class="bg-white border-transparent text-black surface-200 ml-1"
+                                [routerLink]="[consignment.id, 'edit']"></button>
+                            <button pButton severity="danger" icon="pi pi-trash"
+                                class="bg-white border-transparent text-black surface-200 ml-1"
+                                (click)="confirmDeleteConsignment(consignment)"></button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="5" class="text-center py-6">
+                        <div class="flex flex-column items-center gap-3">
+                            <i class="pi pi-info-circle text-4xl text-400"></i>
+                            <span class="text-600 text-lg">
+                                No consignments found
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

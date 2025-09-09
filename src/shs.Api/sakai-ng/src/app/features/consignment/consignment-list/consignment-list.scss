@@ -1,0 +1,52 @@
+// Consignment List Component Styles
+// Inherits most styles from the global layout and PrimeNG components
+
+
+// Table specific styles
+:host ::ng-deep {
+  .p-datatable {
+    .p-datatable-header {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+    }
+
+    .p-datatable-thead > tr > th {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      font-weight: 600;
+    }
+
+    .p-datatable-tbody > tr {
+      &:hover {
+        background: #f8f9fa;
+      }
+    }
+
+    .p-datatable-tbody > tr > td {
+      border: 1px solid #dee2e6;
+    }
+  }
+
+  // Button styles
+  .p-button {
+    &.p-button-outlined {
+      border: 1px solid #dee2e6;
+
+      &:hover {
+        background: #f8f9fa;
+        border-color: #adb5bd;
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .flex-column {
+    flex-direction: column;
+  }
+
+  .md\\:flex-row {
+    flex-direction: column;
+  }
+}

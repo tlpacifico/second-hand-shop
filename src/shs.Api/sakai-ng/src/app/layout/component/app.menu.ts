@@ -27,7 +27,8 @@ export class AppMenu {
             {
                 label: 'Consignado',
                 items: [
-                    { label: 'Donos', icon: 'pi pi-fw pi-id-card', routerLink: ['/consignment/suppliers'] },
+                    { label: 'Consignados', icon: 'pi pi-fw pi-id-card', routerLink: ['/consignments'] },
+                    { label: 'Donos', icon: 'pi pi-fw pi-id-card', routerLink: ['/consignments/suppliers'] },
                 ]
             }
             /*

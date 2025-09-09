@@ -1,0 +1,79 @@
+<p-toast />
+
+<div class="w-full bg-white p-4">
+    <p-card>
+        <form [formGroup]="consignmentForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6 py-3 px-4">
+            <h2 class="text-2xl font-semibold text-gray-900">Create New Consignment</h2>
+
+            <!-- Supplier Selection -->
+            <div class="flex flex-wrap gap-6">
+                <div class="flex flex-col grow basis-0 gap-2">
+                    <label htmlFor="supplierId">*Supplier</label>
+                    <select
+                        id="supplierId"
+                        formControlName="supplierId"
+                        [ngClass]="{'p-invalid': isFieldInvalid('supplierId')}"
+                        [disabled]="isLoading || loadingSuppliers"
+                        class="p-inputtext">
+                        <option value="">Select a supplier</option>
+                        <option *ngFor="let supplier of suppliers" [value]="supplier.id">
+                            {{ supplier.name }}
+                        </option>
+                    </select>
+                    <ng-container *ngIf="consignmentForm.get('supplierId') as supplierId">
+                        <div *ngIf="supplierId.invalid && supplierId.errors && supplierId.touched">
+                            <div class="p-error" *ngIf="supplierId.hasError('required')">
+                                Supplier is required
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- Consignment Date -->
+            <div class="flex flex-wrap gap-6">
+                <div class="flex flex-col grow basis-0 gap-2">
+                    <label htmlFor="consignmentDate">*Consignment Date</label>
+                    <input
+                        pInputText
+                        id="consignmentDate"
+                        formControlName="consignmentDate"
+                        type="date"
+                        [max]="maxDate"
+                        [ngClass]="{'p-invalid': isFieldInvalid('consignmentDate')}"
+                        [disabled]="isLoading">
+                    <ng-container *ngIf="consignmentForm.get('consignmentDate') as consignmentDate">
+                        <div *ngIf="consignmentDate.invalid && consignmentDate.errors && consignmentDate.touched">
+                            <div class="p-error" *ngIf="consignmentDate.hasError('required')">
+                                Consignment date is required
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex w-full justify-end gap-3" styleClass="mb-4">
+                <button
+                    pButton
+                    pRipple
+                    type="button"
+                    label="Cancel"
+                    icon="pi pi-times"
+                    class="p-button-outlined"
+                    (click)="onCancel()"
+                    [disabled]="isLoading">
+                </button>
+                <button
+                    pButton
+                    pRipple
+                    type="submit"
+                    label="Create Consignment"
+                    icon="pi pi-check"
+                    [disabled]="consignmentForm.invalid || isLoading"
+                    [loading]="isLoading">
+                </button>
+            </div>
+        </form>
+    </p-card>
+</div>
